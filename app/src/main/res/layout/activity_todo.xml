@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".TodoActivity">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvPhotos"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/footer" />
+
+    <FrameLayout
+        android:id="@+id/footer"
+        android:layout_margin="16dp"
+        android:background="@color/colorPrimary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+
+        <Button
+            android:id="@+id/btnLoadMore"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:text="@string/load_more"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            tools:visibility="visible" />
+
+        <ProgressBar
+            android:layout_gravity="center"
+            android:id="@+id/pbPhotos"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            tools:visibility="gone" />
+    </FrameLayout>
+</RelativeLayout>
