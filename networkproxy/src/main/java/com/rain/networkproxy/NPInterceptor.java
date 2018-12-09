@@ -1,8 +1,8 @@
 package com.rain.networkproxy;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
+import com.rain.networkproxy.helper.NPLogger;
 import com.rain.networkproxy.model.Instruction;
 import com.rain.networkproxy.model.NPState;
 import com.rain.networkproxy.model.PendingResponse;
@@ -66,7 +66,7 @@ final class NPInterceptor implements Interceptor {
         try {
             return apply(response, instruction);
         } catch (InterruptedException e) {
-            Log.e(Constants.TAG, "Interceptor with id: " + id, e);
+            NPLogger.logError("Interceptor with id: " + id, e);
             return response;
         }
     }

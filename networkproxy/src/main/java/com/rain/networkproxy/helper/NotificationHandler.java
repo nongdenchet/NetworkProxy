@@ -12,7 +12,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 
 import com.rain.networkproxy.R;
-import com.rain.networkproxy.ui.NetworkProxyActivity;
+import com.rain.networkproxy.ui.NPActivity;
 
 public final class NotificationHandler {
     private static final int NOTIFICATION_ID = 1001;
@@ -24,11 +24,11 @@ public final class NotificationHandler {
     }
 
     private void fireNotification(@NonNull Context context) {
-        final Intent intent = NetworkProxyActivity.newIntent(context);
+        final Intent intent = NPActivity.newIntent(context);
         Notification notification = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(android.R.drawable.ic_dialog_alert)
-                .setContentTitle(context.getString(R.string.network_proxy_noti_title))
-                .setContentText(context.getString(R.string.network_proxy_noti_description))
+                .setContentTitle(context.getString(R.string.network_proxy_notification_title))
+                .setContentText(context.getString(R.string.network_proxy_notification_description))
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setAutoCancel(false)
                 .setOngoing(true)
@@ -43,7 +43,7 @@ public final class NotificationHandler {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             final NotificationChannel channel = new NotificationChannel(
                     CHANNEL_ID,
-                    context.getString(R.string.network_proxy_channel_name),
+                    context.getString(R.string.network_proxy_notification_channel_name),
                     NotificationManager.IMPORTANCE_DEFAULT
             );
             context.getSystemService(NotificationManager.class)
