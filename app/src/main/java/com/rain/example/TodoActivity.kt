@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.Toast
 import com.rain.example.model.Todo
 import com.rain.example.model.TodoApi
+import com.rain.networkproxy.NetworkProxy
 import kotlinx.android.synthetic.main.activity_todo.btnLoadMore
 import kotlinx.android.synthetic.main.activity_todo.pbPhotos
 import kotlinx.android.synthetic.main.activity_todo.rvPhotos
@@ -40,6 +41,7 @@ class TodoActivity : AppCompatActivity() {
     private fun createService(): TodoApi {
         val client = OkHttpClient.Builder()
                 .addInterceptor(HttpLoggingInterceptor())
+                .addInterceptor(NetworkProxy.interceptor())
                 .build()
 
         val retrofit = Retrofit.Builder()
