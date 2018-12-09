@@ -2,14 +2,15 @@ package com.rain.networkproxy;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+
 import okhttp3.Interceptor;
 
 public final class NetworkProxy {
     private static NetworkProxy instance;
-    private final NotificationHandler notificationHandler;
+    private final InstanceProvider instanceProvider;
 
-    private NetworkProxy(NotificationHandler notificationHandler) {
-        this.notificationHandler = notificationHandler;
+    private NetworkProxy(@NonNull InstanceProvider instanceProvider) {
+        this.instanceProvider = instanceProvider;
     }
 
     public static void init(Context context) {
@@ -25,19 +26,20 @@ public final class NetworkProxy {
     }
 
     private void initialize(@NonNull Context context) {
-        notificationHandler.execute(context);
+        instanceProvider.provideNotificationHandler().execute(context);
+        instanceProvider.provideProcess().startProcess();
     }
 
     private Interceptor getInterceptor() {
-        return new NetworkProxyInterceptor();
+        return new NPInterceptor(instanceProvider.provideProcess());
     }
 
     @NonNull
-    static NetworkProxy instance() {
+    private static NetworkProxy instance() {
         if (instance == null) {
             synchronized (NetworkProxy.class) {
                 if (instance == null) {
-                    instance = new NetworkProxy(new NotificationHandler());
+                    instance = new NetworkProxy(InstanceProvider.instance());
                 }
             }
         }
