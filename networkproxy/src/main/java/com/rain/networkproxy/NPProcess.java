@@ -1,8 +1,8 @@
 package com.rain.networkproxy;
 
 import android.support.annotation.Nullable;
-import android.util.Log;
 
+import com.rain.networkproxy.helper.NPLogger;
 import com.rain.networkproxy.internal.Dispatcher;
 import com.rain.networkproxy.internal.StateProvider;
 import com.rain.networkproxy.model.NPState;
@@ -10,12 +10,12 @@ import com.rain.networkproxy.model.NPState;
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.PublishSubject;
 
 final class NPProcess implements StateProvider<NPState>, Dispatcher<NPCommand> {
     private static final String TAG = "NPProcess";
+
     private final BehaviorSubject<NPState> state = BehaviorSubject.create();
     private final PublishSubject<NPCommand> commands = PublishSubject.create();
 
@@ -25,7 +25,6 @@ final class NPProcess implements StateProvider<NPState>, Dispatcher<NPCommand> {
     void startProcess() {
         stopProcess();
         disposable = commands.scan(NPState.DEFAULT, new NPStateReducer())
-                .subscribeOn(Schedulers.newThread())
                 .subscribe(new Consumer<NPState>() {
                     @Override
                     public void accept(NPState npState) {
@@ -34,7 +33,7 @@ final class NPProcess implements StateProvider<NPState>, Dispatcher<NPCommand> {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) {
-                        Log.e(Constants.TAG, TAG, throwable);
+                        NPLogger.logError(TAG, throwable);
                     }
                 });
     }

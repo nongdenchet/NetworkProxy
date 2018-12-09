@@ -1,7 +1,6 @@
 package com.rain.networkproxy;
 
-import android.util.Log;
-
+import com.rain.networkproxy.helper.NPLogger;
 import com.rain.networkproxy.model.Instruction;
 import com.rain.networkproxy.model.NPState;
 import com.rain.networkproxy.model.PendingResponse;
@@ -32,12 +31,18 @@ final class NPStateReducer implements BiFunction<NPState, NPCommand, NPState> {
     }
 
     private NPState applyInstructions(NPState prev, List<Instruction> instructions) {
-        Log.d(Constants.TAG, "Applying instructions: " + instructions);
-
+        NPLogger.log("Applying instructions: " + instructions);
         final Set<String> ids = toIds(instructions);
+
+        final List<PendingResponse> newPendingResponse = new ArrayList<>();
+        for (PendingResponse response : prev.getResponses()) {
+            if (!ids.contains(response.getId())) {
+                newPendingResponse.add(response);
+            }
+        }
+
         final int listSize = instructions.size() + prev.getInstructions().size();
         final List<Instruction> newInstructions = new ArrayList<>(listSize);
-
         for (Instruction instruction : prev.getInstructions()) {
             if (!ids.contains(instruction.getId())) {
                 newInstructions.add(instruction);
@@ -46,6 +51,7 @@ final class NPStateReducer implements BiFunction<NPState, NPCommand, NPState> {
         newInstructions.addAll(instructions);
 
         return prev.newBuilder()
+                .responses(newPendingResponse)
                 .instructions(newInstructions)
                 .build();
     }
@@ -65,7 +71,7 @@ final class NPStateReducer implements BiFunction<NPState, NPCommand, NPState> {
     }
 
     private NPState addPendingResponse(NPState prev, PendingResponse newResponse) {
-        Log.d(Constants.TAG, "Adding response: " + newResponse);
+        NPLogger.log("Adding response: " + newResponse);
 
         final List<PendingResponse> responses = new ArrayList<>(prev.getResponses().size());
         boolean contains = false;
@@ -87,7 +93,7 @@ final class NPStateReducer implements BiFunction<NPState, NPCommand, NPState> {
     }
 
     private NPState applyFilter(NPState prev, List<String> rules) {
-        Log.d(Constants.TAG, "Applying filter: " + rules.toString());
+        NPLogger.log("Applying filter: " + rules.toString());
 
         return prev.newBuilder()
                 .requestFilter(new RequestFilter(rules))

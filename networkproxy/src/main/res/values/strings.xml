@@ -1,6 +1,7 @@
 <resources>
     <string name="network_proxy">NetworkProxy</string>
-    <string name="network_proxy_channel_name">NetworkProxy</string>
-    <string name="network_proxy_noti_title">NetworkProxy is running</string>
-    <string name="network_proxy_noti_description">Click to monitor your pending responses</string>
+    <string name="network_proxy_notification_channel_name">NetworkProxy</string>
+    <string name="network_proxy_notification_title">NetworkProxy is running</string>
+    <string name="network_proxy_notification_description">Click to monitor your pending responses</string>
+    <string name="network_proxy_proceed">Proceed</string>
 </resources>

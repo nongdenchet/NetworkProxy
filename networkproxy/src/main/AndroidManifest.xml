@@ -3,7 +3,8 @@
 
     <application>
         <activity
-            android:name=".ui.NetworkProxyActivity"
-            android:label="@string/network_proxy" />
+            android:name=".ui.NPActivity"
+            android:label="@string/network_proxy"
+            android:launchMode="singleTop" />
     </application>
 </manifest>
