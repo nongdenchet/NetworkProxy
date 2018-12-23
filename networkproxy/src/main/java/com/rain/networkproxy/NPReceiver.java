@@ -13,10 +13,12 @@ public final class NPReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        final Intent newIntent = new Intent(INSTRUCTION_EVENT);
-        newIntent.putExtra(INSTRUCTION_EVENT_DATA, intent.getStringExtra(INSTRUCTION_EVENT_DATA));
-        newIntent.putExtra(INSTRUCTION_EVENT_BODY, intent.getStringExtra(INSTRUCTION_EVENT_BODY));
-        LocalBroadcastManager.getInstance(context)
-                .sendBroadcast(newIntent);
+        if (INSTRUCTION_EVENT.equals(intent.getAction())) {
+            final Intent newIntent = new Intent(INSTRUCTION_EVENT);
+            newIntent.putExtra(INSTRUCTION_EVENT_DATA, intent.getStringExtra(INSTRUCTION_EVENT_DATA));
+            newIntent.putExtra(INSTRUCTION_EVENT_BODY, intent.getStringExtra(INSTRUCTION_EVENT_BODY));
+            LocalBroadcastManager.getInstance(context)
+                    .sendBroadcast(newIntent);
+        }
     }
 }

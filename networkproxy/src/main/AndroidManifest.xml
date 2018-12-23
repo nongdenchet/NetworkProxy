@@ -12,7 +12,7 @@
             android:name=".NPReceiver"
             tools:ignore="ExportedReceiver">
             <intent-filter>
-                <action android:name="com.rain.np.receiver" />
+                <action android:name="com.rain.networkproxy.INSTRUCTION" />
             </intent-filter>
         </receiver>
     </application>
