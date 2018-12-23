@@ -34,9 +34,10 @@ final class NPInterceptor implements Interceptor {
     public Response intercept(@NonNull Chain chain) throws IOException {
         final Request request = chain.request();
         final Response response = chain.proceed(request);
-        final RequestFilter requestFilter = process.currentState().getRequestFilter();
 
-        if (!requestFilter.isMatch(request.url().encodedPath())) {
+        final RequestFilter requestFilter = process.currentState().getRequestFilter();
+        final String url = request.url().url().toString();
+        if (!requestFilter.isMatch(url)) {
             return response;
         }
 
