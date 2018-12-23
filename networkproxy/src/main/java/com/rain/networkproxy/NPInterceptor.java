@@ -10,7 +10,6 @@ import com.rain.networkproxy.model.RequestFilter;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
@@ -44,7 +43,7 @@ final class NPInterceptor implements Interceptor {
     }
 
     private Response waitAndApplyInstruction(Response response) {
-        final String id = UUID.randomUUID().toString();
+        final String id = String.valueOf(process.getNextId());
         final PendingResponse pendingResponse = new PendingResponse(id, response);
         process.dispatch(new NPCommand.AddPendingResponse(pendingResponse));
 

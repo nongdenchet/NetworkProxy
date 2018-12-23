@@ -1,4 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.rain.networkproxy">
 
     <application>
@@ -6,5 +7,13 @@
             android:name=".ui.NPActivity"
             android:label="@string/network_proxy"
             android:launchMode="singleTop" />
+
+        <receiver
+            android:name=".NPReceiver"
+            tools:ignore="ExportedReceiver">
+            <intent-filter>
+                <action android:name="com.rain.np.receiver" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>

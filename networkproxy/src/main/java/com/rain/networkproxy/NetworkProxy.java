@@ -28,6 +28,7 @@ public final class NetworkProxy {
     private void initialize(@NonNull Context context) {
         instanceProvider.provideNotificationHandler().execute(context);
         instanceProvider.provideProcess().startProcess();
+        instanceProvider.provideBroadcastHelper().execute(context);
     }
 
     private Interceptor getInterceptor() {
