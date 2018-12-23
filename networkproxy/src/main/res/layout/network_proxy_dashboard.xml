@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/network_proxy_floating_margin"
+        android:background="@drawable/network_proxy_border"
+        android:elevation="@dimen/network_proxy_floating_margin"
+        android:visibility="gone"
+        tools:targetApi="lollipop"
+        tools:visibility="visible">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rvPending"
+            android:layout_width="@dimen/network_proxy_dashboard_size"
+            android:layout_height="@dimen/network_proxy_dashboard_size" />
+    </FrameLayout>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/shortcut"
+        android:layout_width="@dimen/network_proxy_shortcut_size"
+        android:layout_height="@dimen/network_proxy_shortcut_size"
+        android:layout_centerInParent="true"
+        android:layout_margin="@dimen/network_proxy_floating_margin"
+        android:elevation="@dimen/network_proxy_floating_margin"
+        android:src="@drawable/network_proxy_ic_shortcut"
+        app:civ_border_color="@android:color/white"
+        app:civ_border_width="1dp"
+        app:civ_fill_color="@color/network_proxy_primary"
+        tools:targetApi="lollipop"
+        tools:visibility="visible" />
+</RelativeLayout>

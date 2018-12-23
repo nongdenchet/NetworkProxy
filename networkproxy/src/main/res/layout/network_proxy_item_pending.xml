@@ -3,27 +3,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/network_proxy_primary"
     android:orientation="vertical"
-    android:paddingStart="@dimen/network_proxy_normal_space"
-    android:paddingTop="@dimen/network_proxy_small_space"
-    android:paddingEnd="@dimen/network_proxy_normal_space"
-    android:paddingBottom="@dimen/network_proxy_small_space">
-
-    <TextView
-        android:id="@+id/tvId"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:lines="1"
-        android:textColor="@android:color/black"
-        android:textSize="@dimen/network_proxy_normal_size"
-        tools:text="123e4567-e89b-12d3-a456-426655440000" />
+    android:padding="@dimen/network_proxy_small_space">
 
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tvId"
-        android:textColor="@android:color/black"
+        android:textColor="@android:color/white"
         android:textSize="@dimen/network_proxy_normal_size"
         tools:text="https://localhost:3000/api/v3/services" />
 
@@ -35,9 +23,8 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_marginTop="@dimen/network_proxy_small_space"
-        android:background="?selectableItemBackground"
         android:padding="@dimen/network_proxy_xsmall_space"
         android:text="@string/network_proxy_proceed"
-        android:textColor="@color/network_proxy_primary"
+        android:textColor="@android:color/white"
         android:textSize="@dimen/network_proxy_normal_size" />
 </RelativeLayout>
