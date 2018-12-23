@@ -16,6 +16,7 @@ import io.reactivex.functions.Predicate;
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 final class NPInterceptor implements Interceptor {
     private final NPProcess process;
@@ -77,6 +78,11 @@ final class NPInterceptor implements Interceptor {
 
         if (input.getStatus() != null) {
             builder.code(input.getStatus());
+        }
+
+        final ResponseBody responseBody = response.body();
+        if (input.getBody() != null && responseBody != null) {
+            builder.body(ResponseBody.create(responseBody.contentType(), input.getBody()));
         }
 
         if (input.getDelay() != null) {

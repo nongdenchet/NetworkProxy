@@ -51,28 +51,35 @@ public final class Instruction {
 
     public static final class Input {
         private final Integer status;
+        private final String body;
         private final Long delay;
 
         Input() {
-            this(null, null);
+            this(null, null, null);
         }
 
         public Input(@Nullable Long delay) {
-            this(null, delay);
+            this(null, null, delay);
         }
 
-        public Input(@Nullable Integer status) {
-            this(status, null);
+        public Input(@Nullable Integer status, @Nullable String body) {
+            this(status, body, null);
         }
 
-        Input(@Nullable Integer status, @Nullable Long delay) {
+        Input(@Nullable Integer status, @Nullable String body, @Nullable Long delay) {
             this.status = status;
+            this.body = body;
             this.delay = delay;
         }
 
         @Nullable
         public Integer getStatus() {
             return status;
+        }
+
+        @Nullable
+        public String getBody() {
+            return body;
         }
 
         @Nullable
@@ -93,12 +100,16 @@ public final class Instruction {
             if (status != null ? !status.equals(input.status) : input.status != null) {
                 return false;
             }
+            if (body != null ? !body.equals(input.body) : input.body != null) {
+                return false;
+            }
             return delay != null ? delay.equals(input.delay) : input.delay == null;
         }
 
         @Override
         public int hashCode() {
             int result = status != null ? status.hashCode() : 0;
+            result = 31 * result + (body != null ? body.hashCode() : 0);
             result = 31 * result + (delay != null ? delay.hashCode() : 0);
             return result;
         }
@@ -107,6 +118,7 @@ public final class Instruction {
         public String toString() {
             return "Input{"
                     + "status=" + status
+                    + "body= " + body
                     + ", delay=" + delay
                     + '}';
         }

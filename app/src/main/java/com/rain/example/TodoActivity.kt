@@ -5,6 +5,8 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import android.widget.Toast
+import com.google.gson.Gson
+import com.rain.example.model.ErrorResponse
 import com.rain.example.model.Todo
 import com.rain.example.model.TodoApi
 import com.rain.networkproxy.NetworkProxy
@@ -20,6 +22,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class TodoActivity : AppCompatActivity() {
+    private val gson = Gson()
     private val service = createService()
     private val todoList = mutableListOf<Todo>()
     private val todoAdapter = TodoAdapter()
@@ -93,8 +96,15 @@ class TodoActivity : AppCompatActivity() {
                 rvPhotos.smoothScrollToPosition(todoList.lastIndex)
             }
         } else {
-            Toast.makeText(this@TodoActivity, R.string.sth_went_wrong, Toast.LENGTH_SHORT)
-                    .show()
+            val responseBody = response.errorBody()
+            if (responseBody != null) {
+                val error = gson.fromJson(responseBody.string(), ErrorResponse::class.java)
+                Toast.makeText(this@TodoActivity, error.message, Toast.LENGTH_SHORT)
+                        .show()
+            } else {
+                Toast.makeText(this@TodoActivity, R.string.sth_went_wrong, Toast.LENGTH_SHORT)
+                        .show()
+            }
         }
     }
 
