@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
@@ -28,11 +29,18 @@ public final class BroadcastHelper {
     }
 
     private final class Data {
-        @SerializedName("id")
-        public final String id;
 
-        private Data(String id) {
+        @Nullable
+        @SerializedName("id")
+        final String id;
+
+        @Nullable
+        @SerializedName("status")
+        final Integer status;
+
+        private Data(@Nullable String id, @Nullable Integer status) {
             this.id = id;
+            this.status = status;
         }
     }
 
@@ -52,7 +60,11 @@ public final class BroadcastHelper {
 
         try {
             final Data data = gson.fromJson(rawData, Data.class);
-            final Instruction instruction = new Instruction(data.id, new Instruction.Input());
+            if (data.id == null) {
+                throw new NullPointerException("data.id should not be null");
+            }
+
+            final Instruction instruction = new Instruction(data.id, new Instruction.Input(data.status));
             final List<Instruction> instructions = Collections.singletonList(instruction);
             final NPCommand command = new NPCommand.ApplyInstructions(instructions);
 

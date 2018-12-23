@@ -86,10 +86,15 @@ class TodoActivity : AppCompatActivity() {
 
     private fun handleResponse(response: Response<Todo>) {
         hideLoading()
-        response.body()?.run {
-            todoList.add(this)
-            todoAdapter.submitList(todoList)
-            rvPhotos.smoothScrollToPosition(todoList.lastIndex)
+        if (response.isSuccessful) {
+            response.body()?.run {
+                todoList.add(this)
+                todoAdapter.submitList(todoList)
+                rvPhotos.smoothScrollToPosition(todoList.lastIndex)
+            }
+        } else {
+            Toast.makeText(this@TodoActivity, R.string.sth_went_wrong, Toast.LENGTH_SHORT)
+                    .show()
         }
     }
 
