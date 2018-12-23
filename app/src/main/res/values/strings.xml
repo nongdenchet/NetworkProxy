@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Example</string>
     <string name="load_more">Load More</string>
+    <string name="sth_went_wrong">Something went wrong, please try again!!!</string>
 </resources>

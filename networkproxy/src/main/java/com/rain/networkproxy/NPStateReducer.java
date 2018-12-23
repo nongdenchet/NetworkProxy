@@ -32,11 +32,13 @@ final class NPStateReducer implements BiFunction<NPState, NPCommand, NPState> {
 
     private NPState applyInstructions(NPState prev, List<Instruction> instructions) {
         NPLogger.log("Applying instructions: " + instructions);
-        final Set<String> ids = toIds(instructions);
+
+        final Set<String> instructionIds = toInstructionIds(instructions);
+        final Set<String> responseIds = toResponseIds(prev.getResponses());
 
         final List<PendingResponse> newPendingResponse = new ArrayList<>();
         for (PendingResponse response : prev.getResponses()) {
-            if (!ids.contains(response.getId())) {
+            if (!instructionIds.contains(response.getId())) {
                 newPendingResponse.add(response);
             }
         }
@@ -44,11 +46,15 @@ final class NPStateReducer implements BiFunction<NPState, NPCommand, NPState> {
         final int listSize = instructions.size() + prev.getInstructions().size();
         final List<Instruction> newInstructions = new ArrayList<>(listSize);
         for (Instruction instruction : prev.getInstructions()) {
-            if (!ids.contains(instruction.getId())) {
+            if (!instructionIds.contains(instruction.getId())) {
                 newInstructions.add(instruction);
             }
         }
-        newInstructions.addAll(instructions);
+        for (Instruction instruction : instructions) {
+            if (responseIds.contains(instruction.getId())) {
+                newInstructions.add(instruction);
+            }
+        }
 
         return prev.newBuilder()
                 .responses(newPendingResponse)
@@ -56,12 +62,26 @@ final class NPStateReducer implements BiFunction<NPState, NPCommand, NPState> {
                 .build();
     }
 
-    private Set<String> toIds(List<Instruction> instructions) {
+    private Set<String> toInstructionIds(List<Instruction> instructions) {
         final List<String> ids = Observable.fromIterable(instructions)
                 .map(new Function<Instruction, String>() {
                     @Override
                     public String apply(Instruction instruction) {
                         return instruction.getId();
+                    }
+                })
+                .toList()
+                .blockingGet();
+
+        return new HashSet<>(ids);
+    }
+
+    private Set<String> toResponseIds(List<PendingResponse> responses) {
+        final List<String> ids = Observable.fromIterable(responses)
+                .map(new Function<PendingResponse, String>() {
+                    @Override
+                    public String apply(PendingResponse response) {
+                        return response.getId();
                     }
                 })
                 .toList()

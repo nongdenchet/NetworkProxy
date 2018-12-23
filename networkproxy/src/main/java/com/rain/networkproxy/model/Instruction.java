@@ -53,7 +53,7 @@ public final class Instruction {
         private final Integer status;
         private final Long delay;
 
-        public Input() {
+        Input() {
             this(null, null);
         }
 
@@ -61,7 +61,11 @@ public final class Instruction {
             this(null, delay);
         }
 
-        public Input(@Nullable Integer status, @Nullable Long delay) {
+        public Input(@Nullable Integer status) {
+            this(status, null);
+        }
+
+        Input(@Nullable Integer status, @Nullable Long delay) {
             this.status = status;
             this.delay = delay;
         }

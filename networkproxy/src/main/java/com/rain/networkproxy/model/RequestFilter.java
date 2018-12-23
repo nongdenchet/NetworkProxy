@@ -12,7 +12,9 @@ public final class RequestFilter {
     }
 
     public boolean isMatch(@NonNull String url) {
-        return rules.contains(url);
+        return true;
+        // TODO: implement filter
+        // return rules.contains(url);
     }
 
     @Override
