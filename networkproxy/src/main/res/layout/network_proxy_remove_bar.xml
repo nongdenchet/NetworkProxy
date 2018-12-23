@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/network_proxy_remove_bar_height"
+    android:background="@color/network_proxy_light_red"
+    android:padding="8dp">
+
+    <ImageView
+        android:id="@+id/ivRemove"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/network_proxy_ic_close"
+        tools:ignore="ContentDescription" />
+</FrameLayout>

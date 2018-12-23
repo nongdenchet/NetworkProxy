@@ -1,4 +1,4 @@
-package com.rain.networkproxy.ui;
+package com.rain.networkproxy.ui.dashboard;
 
 import com.rain.networkproxy.NPCommand;
 import com.rain.networkproxy.internal.Dispatcher;
@@ -13,11 +13,11 @@ import java.util.List;
 import io.reactivex.Observable;
 import io.reactivex.functions.Function;
 
-final class NPViewModel {
+final class DashboardViewModel {
     private final Dispatcher<NPCommand> dispatcher;
     private final StateProvider<NPState> stateProvider;
 
-    NPViewModel(Dispatcher<NPCommand> dispatcher, StateProvider<NPState> stateProvider) {
+    DashboardViewModel(Dispatcher<NPCommand> dispatcher, StateProvider<NPState> stateProvider) {
         this.dispatcher = dispatcher;
         this.stateProvider = stateProvider;
     }

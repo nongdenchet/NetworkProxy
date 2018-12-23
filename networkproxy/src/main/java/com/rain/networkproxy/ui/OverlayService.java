@@ -7,6 +7,7 @@ import android.content.res.Configuration;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
@@ -22,22 +23,23 @@ import static android.view.MotionEvent.ACTION_MOVE;
 import static android.view.MotionEvent.ACTION_UP;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
-abstract class OverlayService extends Service implements View.OnTouchListener {
+public abstract class OverlayService extends Service implements View.OnTouchListener {
     private static final long MAX_CLICK_DURATION = 100;
 
-    private WindowManager windowManager;
+    protected WindowManager windowManager;
     private FrameLayout window;
     private boolean moving = false;
     private long startClickTime = 0;
 
-    abstract View onCreateView(ViewGroup window);
-
-    abstract void onViewCreated(View view);
+    protected abstract View onCreateView(@NonNull ViewGroup window);
+    protected abstract void onWindowCreate();
+    protected abstract void onViewCreated(@NonNull View view);
 
     @Override
     public void onCreate() {
         super.onCreate();
         windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        onWindowCreate();
 
         // Initialize window
         window = new FrameLayout(this) {
@@ -54,7 +56,7 @@ abstract class OverlayService extends Service implements View.OnTouchListener {
         window.setFocusable(true);
 
         // Initialize layout params
-        Point position = getInitPosition();
+        final Point position = getInitPosition();
         WindowManager.LayoutParams params = new WindowManager.LayoutParams();
         params.format = PixelFormat.RGBA_8888;
         params.type = Utils.getOverlayType();
@@ -68,6 +70,11 @@ abstract class OverlayService extends Service implements View.OnTouchListener {
         params.y = position.y;
         windowManager.addView(window, params);
         onViewCreated(window);
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return START_NOT_STICKY;
     }
 
     protected void unFocusWindow() {

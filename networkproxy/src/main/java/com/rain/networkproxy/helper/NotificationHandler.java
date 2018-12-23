@@ -12,7 +12,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 
 import com.rain.networkproxy.R;
-import com.rain.networkproxy.ui.NPActivity;
+import com.rain.networkproxy.ui.onboarding.OnboardingActivity;
 
 public final class NotificationHandler {
     private static final int NOTIFICATION_ID = 1001;
@@ -24,7 +24,7 @@ public final class NotificationHandler {
     }
 
     private void fireNotification(@NonNull Context context) {
-        final Intent intent = NPActivity.newIntent(context);
+        final Intent intent = OnboardingActivity.newIntent(context);
         Notification notification = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(android.R.drawable.ic_dialog_alert)
                 .setContentTitle(context.getString(R.string.network_proxy_notification_title))

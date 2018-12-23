@@ -2,11 +2,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.rain.networkproxy">
 
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
     <application>
         <activity
-            android:name=".ui.NPActivity"
+            android:name=".ui.onboarding.OnboardingActivity"
             android:label="@string/network_proxy"
             android:launchMode="singleTop" />
+
+        <service android:name=".ui.dashboard.Dashboard" />
 
         <receiver
             android:name=".NPReceiver"
