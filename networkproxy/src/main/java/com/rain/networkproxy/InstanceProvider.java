@@ -2,6 +2,7 @@ package com.rain.networkproxy;
 
 import android.support.annotation.NonNull;
 
+import com.rain.networkproxy.helper.BroadcastHelper;
 import com.rain.networkproxy.helper.NotificationHandler;
 import com.rain.networkproxy.internal.Dispatcher;
 import com.rain.networkproxy.internal.StateProvider;
@@ -26,6 +27,10 @@ public final class InstanceProvider {
 
     NotificationHandler provideNotificationHandler() {
         return new NotificationHandler();
+    }
+
+    BroadcastHelper provideBroadcastHelper() {
+        return new BroadcastHelper(provideDispatcher());
     }
 
     NPProcess provideProcess() {

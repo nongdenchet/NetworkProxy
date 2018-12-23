@@ -7,6 +7,8 @@ import com.rain.networkproxy.internal.Dispatcher;
 import com.rain.networkproxy.internal.StateProvider;
 import com.rain.networkproxy.model.NPState;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
@@ -18,6 +20,7 @@ final class NPProcess implements StateProvider<NPState>, Dispatcher<NPCommand> {
 
     private final BehaviorSubject<NPState> state = BehaviorSubject.create();
     private final PublishSubject<NPCommand> commands = PublishSubject.create();
+    private final AtomicInteger currentId = new AtomicInteger(0);
 
     @Nullable
     private Disposable disposable;
@@ -36,6 +39,10 @@ final class NPProcess implements StateProvider<NPState>, Dispatcher<NPCommand> {
                         NPLogger.logError(TAG, throwable);
                     }
                 });
+    }
+
+    int getNextId() {
+        return currentId.getAndIncrement();
     }
 
     boolean isRunning() {

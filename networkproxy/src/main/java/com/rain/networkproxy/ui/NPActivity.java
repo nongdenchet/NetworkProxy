@@ -21,7 +21,6 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
 
 public final class NPActivity extends AppCompatActivity implements NPAdapter.ItemListener {
-    private static final String TAG = "NPActivity";
     private final NPAdapter adapter = new NPAdapter();
     private final CompositeDisposable disposables = new CompositeDisposable();
 
@@ -57,7 +56,7 @@ public final class NPActivity extends AppCompatActivity implements NPAdapter.Ite
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) {
-                        NPLogger.logError(TAG, throwable);
+                        NPLogger.logError("observePendingResponses", throwable);
                     }
                 }));
     }
