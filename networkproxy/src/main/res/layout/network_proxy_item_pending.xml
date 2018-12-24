@@ -23,7 +23,8 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_marginTop="@dimen/network_proxy_small_space"
-        android:padding="@dimen/network_proxy_xsmall_space"
+        android:background="?android:attr/selectableItemBackground"
+        android:padding="@dimen/network_proxy_xxsmall_space"
         android:text="@string/network_proxy_proceed"
         android:textColor="@android:color/white"
         android:textSize="@dimen/network_proxy_normal_size" />
