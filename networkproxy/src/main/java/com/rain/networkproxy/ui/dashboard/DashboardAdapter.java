@@ -1,5 +1,17 @@
 package com.rain.networkproxy.ui.dashboard;
 
+import com.rain.networkproxy.R;
+import com.rain.networkproxy.helper.NPLogger;
+import com.rain.networkproxy.model.PendingResponse;
+import com.rain.networkproxy.ui.Utils;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,9 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import okhttp3.Response;
-
-import com.rain.networkproxy.R;
-import com.rain.networkproxy.model.PendingResponse;
+import okhttp3.ResponseBody;
 
 final class DashboardAdapter extends ListAdapter<PendingResponse, DashboardAdapter.ViewHolder> {
     @Nullable
@@ -79,6 +89,7 @@ final class DashboardAdapter extends ListAdapter<PendingResponse, DashboardAdapt
         }
     };
 
+    @SuppressLint("InflateParams")
     final class ViewHolder extends RecyclerView.ViewHolder {
         final TextView tvTitle;
 
@@ -93,6 +104,40 @@ final class DashboardAdapter extends ListAdapter<PendingResponse, DashboardAdapt
                     }
                 }
             });
+            itemView.findViewById(R.id.tvDetail).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showDetail();
+                }
+            });
+        }
+
+        @SuppressWarnings("ConstantConditions")
+        private void showDetail() {
+            final PendingResponse pendingResponse = getItem(getAdapterPosition());
+            final Response response = pendingResponse.getResponse();
+            final ResponseBody responseBody = response.body();
+            final View view = LayoutInflater.from(itemView.getContext())
+                    .inflate(R.layout.network_proxy_detail, null);
+            final TextView content = view.findViewById(R.id.content);
+
+            if (responseBody == null) {
+                content.setText(R.string.network_proxy_no_content);
+            } else {
+                try {
+                    content.setText(new JSONObject(Utils.readFromBuffer(response.headers(), responseBody))
+                            .toString(2));
+                } catch (JSONException | IOException e) {
+                    content.setText(R.string.network_proxy_error_content);
+                    NPLogger.logError("ViewHolder#showDetail", e);
+                }
+            }
+
+            AlertDialog dialog = new AlertDialog.Builder(itemView.getContext())
+                    .setView(view)
+                    .create();
+            dialog.getWindow().setType(Utils.getOverlayType());
+            dialog.show();
         }
     }
 }

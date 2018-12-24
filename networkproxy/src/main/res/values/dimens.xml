@@ -9,5 +9,6 @@
     <dimen name="network_proxy_remove_bar_height">56dp</dimen>
     <dimen name="network_proxy_floating_margin">4dp</dimen>
     <dimen name="network_proxy_shortcut_size">32dp</dimen>
+    <dimen name="network_proxy_detail_size">320dp</dimen>
     <dimen name="network_proxy_dashboard_size">240dp</dimen>
 </resources>
