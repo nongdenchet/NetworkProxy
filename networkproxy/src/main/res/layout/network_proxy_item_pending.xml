@@ -16,6 +16,22 @@
         tools:text="https://localhost:3000/api/v3/services" />
 
     <TextView
+        android:id="@+id/tvDetail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvTitle"
+        android:layout_marginTop="@dimen/network_proxy_small_space"
+        android:layout_marginEnd="@dimen/network_proxy_small_space"
+        android:layout_marginRight="@dimen/network_proxy_small_space"
+        android:layout_toStartOf="@+id/tvProceed"
+        android:layout_toLeftOf="@+id/tvProceed"
+        android:background="?android:attr/selectableItemBackground"
+        android:padding="@dimen/network_proxy_xxsmall_space"
+        android:text="@string/network_proxy_detail"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/network_proxy_normal_size" />
+
+    <TextView
         android:id="@+id/tvProceed"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
