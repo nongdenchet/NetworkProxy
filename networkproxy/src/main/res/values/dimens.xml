@@ -2,9 +2,10 @@
 <resources>
     <dimen name="network_proxy_normal_size">16sp</dimen>
     <dimen name="network_proxy_small_size">12sp</dimen>
-    <dimen name="network_proxy_normal_space">16sp</dimen>
-    <dimen name="network_proxy_small_space">8sp</dimen>
-    <dimen name="network_proxy_xsmall_space">8sp</dimen>
+    <dimen name="network_proxy_normal_space">16dp</dimen>
+    <dimen name="network_proxy_small_space">8dp</dimen>
+    <dimen name="network_proxy_xsmall_space">8dp</dimen>
+    <dimen name="network_proxy_xxsmall_space">4dp</dimen>
     <dimen name="network_proxy_remove_bar_height">56dp</dimen>
     <dimen name="network_proxy_floating_margin">4dp</dimen>
     <dimen name="network_proxy_shortcut_size">32dp</dimen>

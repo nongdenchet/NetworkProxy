@@ -1,7 +1,9 @@
 package com.rain.networkproxy.ui.dashboard;
 
+import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.recyclerview.extensions.ListAdapter;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
@@ -9,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import okhttp3.Response;
 
 import com.rain.networkproxy.R;
 import com.rain.networkproxy.model.PendingResponse;
@@ -40,9 +43,28 @@ final class DashboardAdapter extends ListAdapter<PendingResponse, DashboardAdapt
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int pos) {
         final PendingResponse response = getItem(pos);
-        final String content = response.getResponse().request().url().encodedPath()
-                + "(" + response.getId() + ")";
+        final Response originResponse = response.getResponse();
+        final int code = originResponse.code();
+        final String content = originResponse.request().url().url()
+                + "(id=" + response.getId()
+                + ", status=" + code
+                + ")";
         viewHolder.tvTitle.setText(content);
+        viewHolder.itemView.setBackgroundColor(ContextCompat.getColor(viewHolder.itemView.getContext(),
+                getBackgroundColor(code)));
+    }
+
+    @ColorRes
+    private int getBackgroundColor(int code) {
+        int color = R.color.network_proxy_green;
+        if (code < 400 && code >= 300) {
+            color = R.color.network_proxy_blue;
+        } else if (code < 500 && code >= 400) {
+            color = R.color.network_proxy_yellow;
+        } else if (code >= 500) {
+            color = R.color.network_proxy_red;
+        }
+        return color;
     }
 
     private static final DiffUtil.ItemCallback<PendingResponse> callback = new DiffUtil.ItemCallback<PendingResponse>() {

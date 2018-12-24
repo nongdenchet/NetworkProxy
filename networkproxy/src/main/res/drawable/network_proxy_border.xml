@@ -4,7 +4,7 @@
         android:radius="4dp" />
 
     <solid
-        android:color="@color/network_proxy_primary" />
+        android:color="@android:color/black" />
 
     <stroke
         android:width="0.5dp"
