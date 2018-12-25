@@ -10,9 +10,7 @@ import com.rain.example.model.ErrorResponse
 import com.rain.example.model.Todo
 import com.rain.example.model.TodoApi
 import com.rain.networkproxy.NetworkProxy
-import kotlinx.android.synthetic.main.activity_todo.btnLoadMore
-import kotlinx.android.synthetic.main.activity_todo.pbPhotos
-import kotlinx.android.synthetic.main.activity_todo.rvPhotos
+import kotlinx.android.synthetic.main.activity_todo.*
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
@@ -43,15 +41,15 @@ class TodoActivity : AppCompatActivity() {
 
     private fun createService(): TodoApi {
         val client = OkHttpClient.Builder()
-                .addInterceptor(HttpLoggingInterceptor())
-                .addInterceptor(NetworkProxy.interceptor())
-                .build()
+            .addInterceptor(HttpLoggingInterceptor())
+            .addInterceptor(NetworkProxy.interceptor())
+            .build()
 
         val retrofit = Retrofit.Builder()
-                .baseUrl("https://jsonplaceholder.typicode.com/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(client)
-                .build()
+            .baseUrl("https://jsonplaceholder.typicode.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(client)
+            .build()
 
         return retrofit.create<TodoApi>(TodoApi::class.java)
     }
@@ -84,7 +82,7 @@ class TodoActivity : AppCompatActivity() {
     private fun handleError(err: Throwable) {
         hideLoading()
         Toast.makeText(this@TodoActivity, err.message, Toast.LENGTH_SHORT)
-                .show()
+            .show()
     }
 
     private fun handleResponse(response: Response<Todo>) {
@@ -100,10 +98,10 @@ class TodoActivity : AppCompatActivity() {
             if (responseBody != null) {
                 val error = gson.fromJson(responseBody.string(), ErrorResponse::class.java)
                 Toast.makeText(this@TodoActivity, error.message, Toast.LENGTH_SHORT)
-                        .show()
+                    .show()
             } else {
                 Toast.makeText(this@TodoActivity, R.string.sth_went_wrong, Toast.LENGTH_SHORT)
-                        .show()
+                    .show()
             }
         }
     }
