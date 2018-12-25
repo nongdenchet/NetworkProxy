@@ -26,7 +26,7 @@ public final class NotificationHandler {
     private void fireNotification(@NonNull Context context) {
         final Intent intent = OnboardingActivity.newIntent(context);
         Notification notification = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(android.R.drawable.ic_dialog_alert)
+                .setSmallIcon(R.drawable.network_proxy_ic_shortcut)
                 .setContentTitle(context.getString(R.string.network_proxy_notification_title))
                 .setContentText(context.getString(R.string.network_proxy_notification_description))
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
