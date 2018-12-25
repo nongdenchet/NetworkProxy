@@ -1,9 +1,10 @@
 package com.rain.networkproxy.ui;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
@@ -14,15 +15,34 @@ import okio.Buffer;
 import okio.BufferedSource;
 import okio.GzipSource;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
+
+import static android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION;
+
 public final class Utils {
     private static final Charset UTF8 = Charset.forName("UTF-8");
 
-    private Utils() {}
+    private Utils() {
+    }
 
     public static DisplayMetrics getScreenSize(WindowManager windowManager) {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         windowManager.getDefaultDisplay().getMetrics(displayMetrics);
         return displayMetrics;
+    }
+
+    public static boolean hasOverlayPermission(Context context) {
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.M || Settings.canDrawOverlays(context.getApplicationContext());
+    }
+
+    public static void toOverlayPermission(Context context) {
+        if (!hasOverlayPermission(context)) {
+            Intent intent = new Intent();
+            intent.setAction(ACTION_MANAGE_OVERLAY_PERMISSION);
+            intent.setData(Uri.parse("package:" + context.getPackageName()));
+            context.startActivity(intent);
+        }
     }
 
     public static int getOverlayType() {
