@@ -1,13 +1,14 @@
 package com.rain.networkproxy.ui.onboarding;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
+
 import com.rain.networkproxy.ui.Utils;
 import com.rain.networkproxy.ui.dashboard.Dashboard;
 
-public final class OnboardingActivity extends AppCompatActivity {
+public final class OnboardingActivity extends Activity {
     private boolean askedPermission = false;
 
     public static Intent newIntent(@NonNull Context context) {
