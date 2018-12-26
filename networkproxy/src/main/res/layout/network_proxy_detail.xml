@@ -2,7 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="@dimen/network_proxy_detail_size"
     android:layout_height="@dimen/network_proxy_detail_size"
-    android:background="@android:color/black"
+    android:background="@android:color/white"
     android:padding="@dimen/network_proxy_small_space">
 
     <LinearLayout
@@ -14,7 +14,7 @@
             android:id="@+id/content"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/white"
+            android:textColor="@android:color/black"
             android:textSize="@dimen/network_proxy_normal_size" />
     </LinearLayout>
 </ScrollView>

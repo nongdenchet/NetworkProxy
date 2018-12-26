@@ -2,7 +2,6 @@ package com.rain.networkproxy;
 
 import android.support.annotation.NonNull;
 
-import com.rain.networkproxy.helper.NPLogger;
 import com.rain.networkproxy.model.Instruction;
 import com.rain.networkproxy.model.NPState;
 import com.rain.networkproxy.model.PendingResponse;
@@ -64,16 +63,11 @@ final class NPInterceptor implements Interceptor {
                 })
                 .blockingFirst();
 
-        try {
-            return apply(response, instruction);
-        } catch (InterruptedException e) {
-            NPLogger.logError("Interceptor with id: " + id, e);
-            return response;
-        }
+        return apply(response, instruction);
     }
 
     @NonNull
-    private Response apply(Response response, Instruction instruction) throws InterruptedException {
+    private Response apply(Response response, Instruction instruction) {
         final Instruction.Input input = instruction.getInput();
         final Response.Builder builder = response.newBuilder();
 
@@ -84,10 +78,6 @@ final class NPInterceptor implements Interceptor {
         final ResponseBody responseBody = response.body();
         if (input.getBody() != null && responseBody != null) {
             builder.body(ResponseBody.create(responseBody.contentType(), input.getBody()));
-        }
-
-        if (input.getDelay() != null) {
-            Thread.sleep(input.getDelay());
         }
 
         return builder.build();

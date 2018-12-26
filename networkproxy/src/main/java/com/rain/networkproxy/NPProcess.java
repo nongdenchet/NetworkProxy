@@ -27,7 +27,8 @@ final class NPProcess implements StateProvider<NPState>, Dispatcher<NPCommand> {
 
     void startProcess() {
         stopProcess();
-        disposable = commands.scan(NPState.DEFAULT, new NPStateReducer())
+        disposable = commands.serialize()
+                .scan(NPState.DEFAULT, new NPStateReducer())
                 .subscribe(new Consumer<NPState>() {
                     @Override
                     public void accept(NPState npState) {
