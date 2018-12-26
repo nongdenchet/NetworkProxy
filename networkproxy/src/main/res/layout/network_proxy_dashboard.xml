@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_height="wrap_content">
 
-    <FrameLayout
+    <RelativeLayout
         android:id="@+id/content"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/network_proxy_dashboard_width"
+        android:layout_height="@dimen/network_proxy_dashboard_height"
         android:layout_margin="@dimen/network_proxy_floating_margin"
         android:background="@drawable/network_proxy_border"
         android:elevation="@dimen/network_proxy_floating_margin"
@@ -17,23 +16,44 @@
         tools:targetApi="lollipop"
         tools:visibility="visible">
 
+        <ImageView
+            android:id="@+id/ivFilter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:padding="@dimen/network_proxy_small_space"
+            android:src="@drawable/network_proxy_ic_filter"
+            tools:ignore="ContentDescription" />
+
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rvPending"
-            android:layout_width="@dimen/network_proxy_dashboard_size"
-            android:layout_height="@dimen/network_proxy_dashboard_size" />
-    </FrameLayout>
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/ivFilter" />
+
+        <TextView
+            android:id="@+id/tvEmpty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center"
+            android:text="@string/network_proxy_no_pending_responses"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/network_proxy_normal_size"
+            tools:ignore="RelativeOverlap" />
+    </RelativeLayout>
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/shortcut"
         android:layout_width="@dimen/network_proxy_shortcut_size"
         android:layout_height="@dimen/network_proxy_shortcut_size"
-        android:layout_centerInParent="true"
+        android:layout_gravity="center"
         android:layout_margin="@dimen/network_proxy_floating_margin"
         android:elevation="@dimen/network_proxy_floating_margin"
         android:src="@drawable/network_proxy_ic_shortcut"
         app:civ_border_color="@android:color/white"
         app:civ_border_width="1dp"
         app:civ_fill_color="@android:color/black"
-        tools:targetApi="lollipop"
-        tools:visibility="visible" />
-</RelativeLayout>
+        tools:targetApi="lollipop" />
+</FrameLayout>

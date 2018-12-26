@@ -23,7 +23,7 @@ final class DashboardViewModel {
     }
 
     void onProceed(PendingResponse pendingResponse) {
-        final Instruction instruction = new Instruction(pendingResponse.getId(), new Instruction.Input(1000L));
+        final Instruction instruction = new Instruction(pendingResponse.getId(), new Instruction.Input());
         final List<Instruction> instructions = Collections.singletonList(instruction);
         final NPCommand command = new NPCommand.ApplyInstructions(instructions);
 

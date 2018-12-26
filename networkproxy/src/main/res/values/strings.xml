@@ -7,4 +7,5 @@
     <string name="network_proxy_detail">Detail</string>
     <string name="network_proxy_no_content">No Body</string>
     <string name="network_proxy_error_content">Error Parse Content</string>
+    <string name="network_proxy_no_pending_responses">No pending responses</string>
 </resources>

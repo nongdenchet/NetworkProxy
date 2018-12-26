@@ -14,6 +14,7 @@ import android.annotation.SuppressLint;
 import android.graphics.Point;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
@@ -21,6 +22,8 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -40,6 +43,7 @@ public final class Dashboard extends OverlayService implements DashboardAdapter.
 
     private Background background;
     private RemoveBar removeBar;
+    private TextView tvEmpty;
     private View content;
     private View shortcut;
 
@@ -78,7 +82,14 @@ public final class Dashboard extends OverlayService implements DashboardAdapter.
     }
 
     private void initContent(View view) {
+        tvEmpty = view.findViewById(R.id.tvEmpty);
         content = view.findViewById(R.id.content);
+        view.findViewById(R.id.ivFilter).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO: implement filter UI
+            }
+        });
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -157,8 +168,10 @@ public final class Dashboard extends OverlayService implements DashboardAdapter.
 
     private void initPending(View view) {
         RecyclerView rvPending = view.findViewById(R.id.rvPending);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         rvPending.setLayoutManager(new LinearLayoutManager(this));
         rvPending.setAdapter(adapter);
+        rvPending.addItemDecoration(new DividerItemDecoration(this, layoutManager.getOrientation()));
         adapter.setItemListener(this);
     }
 
@@ -177,6 +190,7 @@ public final class Dashboard extends OverlayService implements DashboardAdapter.
                     @Override
                     public void accept(List<PendingResponse> pendingResponses) {
                         adapter.submitList(pendingResponses);
+                        tvEmpty.setVisibility(pendingResponses.isEmpty() ? View.VISIBLE : View.GONE);
                     }
                 }, new Consumer<Throwable>() {
                     @Override
