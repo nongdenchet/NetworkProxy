@@ -10,7 +10,9 @@
             android:label="@string/network_proxy"
             android:launchMode="singleTop" />
 
-        <service android:name=".ui.dashboard.Dashboard" />
+        <service
+            android:name=".ui.dashboard.Dashboard"
+            android:exported="false" />
 
         <receiver
             android:name=".NPReceiver"

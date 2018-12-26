@@ -32,10 +32,10 @@ public abstract class NPCommand {
         }
     }
 
-    public static class AddPendingResponse extends NPCommand {
+    static class AddPendingResponse extends NPCommand {
         private final PendingResponse pendingResponse;
 
-        public AddPendingResponse(@NonNull PendingResponse pendingResponse) {
+        AddPendingResponse(@NonNull PendingResponse pendingResponse) {
             this.pendingResponse = pendingResponse;
         }
 
