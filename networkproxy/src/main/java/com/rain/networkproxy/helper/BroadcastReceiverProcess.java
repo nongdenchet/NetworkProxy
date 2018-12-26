@@ -21,12 +21,15 @@ import static com.rain.networkproxy.Constants.INSTRUCTION_EVENT;
 import static com.rain.networkproxy.Constants.INSTRUCTION_EVENT_BODY;
 import static com.rain.networkproxy.Constants.INSTRUCTION_EVENT_DATA;
 
-public final class BroadcastHelper {
+public final class BroadcastReceiverProcess {
+    private final Context context;
     private final Dispatcher<NPCommand> dispatcher;
     private final Gson gson = new Gson();
 
-    public BroadcastHelper(Dispatcher<NPCommand> dispatcher) {
+    public BroadcastReceiverProcess(@NonNull Dispatcher<NPCommand> dispatcher,
+                                    @NonNull Context context) {
         this.dispatcher = dispatcher;
+        this.context = context;
     }
 
     private final class Data {
@@ -45,7 +48,7 @@ public final class BroadcastHelper {
         }
     }
 
-    public void execute(@NonNull Context context) {
+    public void execute() {
         LocalBroadcastManager.getInstance(context)
                 .registerReceiver(new BroadcastReceiver() {
                     @Override

@@ -18,7 +18,13 @@ public final class NotificationHandler {
     private static final int NOTIFICATION_ID = 1001;
     private static final String CHANNEL_ID = "NetworkProxy";
 
-    public void execute(@NonNull Context context) {
+    private final Context context;
+
+    public NotificationHandler(@NonNull Context context) {
+        this.context = context;
+    }
+
+    public void execute() {
         createNotificationChannel(context);
         fireNotification(context);
     }
