@@ -141,7 +141,7 @@ final class FilterDialogViewModel {
                                     filterItem.isActive()
                             ));
                         }
-                        items.add(0, new FilterItemViewModel(
+                        items.add(SELECT_ALL_POSITION, new FilterItemViewModel(
                                 resourceProvider.getString(R.string.network_proxy_select_all),
                                 allSelected
                         ));
