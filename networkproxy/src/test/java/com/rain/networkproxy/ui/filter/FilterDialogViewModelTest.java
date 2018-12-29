@@ -6,11 +6,13 @@ import com.rain.networkproxy.helper.ResourceProvider;
 import com.rain.networkproxy.storage.FakeFilterStorage;
 import com.rain.networkproxy.storage.FilterItem;
 import com.rain.networkproxy.storage.FilterStorage;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 public class FilterDialogViewModelTest {
     private static final String SELECT_ALL = String.valueOf(R.string.network_proxy_select_all);
@@ -26,6 +28,17 @@ public class FilterDialogViewModelTest {
     }
 
     @Test
+    public void observeItems_empty() {
+        filterStorage.storeItems(Collections.<FilterItem>emptyList());
+        viewModel.observeItems()
+                .test()
+                .assertValue(Collections.<FilterItemViewModel>emptyList())
+                .assertNoErrors()
+                .assertNotComplete()
+                .dispose();
+    }
+
+    @Test
     public void observeItems_shouldReturnSelectAndItems() {
         filterStorage.storeItems(Arrays.asList(
                 new FilterItem("/todos", true),
@@ -35,10 +48,10 @@ public class FilterDialogViewModelTest {
         viewModel.observeItems()
                 .test()
                 .assertValue(Arrays.asList(
-                        new FilterItemViewModel(FilterItemViewModel.Type.SELECT_ALL, SELECT_ALL, false),
-                        new FilterItemViewModel(FilterItemViewModel.Type.ITEM, "/todos", true),
-                        new FilterItemViewModel(FilterItemViewModel.Type.ITEM, "/todos/*", false),
-                        new FilterItemViewModel(FilterItemViewModel.Type.ITEM, "/comments", true)
+                        new FilterItemViewModel(SELECT_ALL, false),
+                        new FilterItemViewModel("/todos", true),
+                        new FilterItemViewModel("/todos/*", false),
+                        new FilterItemViewModel("/comments", true)
                 ))
                 .assertNotComplete()
                 .assertNoErrors()
@@ -55,10 +68,10 @@ public class FilterDialogViewModelTest {
         viewModel.observeItems()
                 .test()
                 .assertValue(Arrays.asList(
-                        new FilterItemViewModel(FilterItemViewModel.Type.SELECT_ALL, SELECT_ALL, true),
-                        new FilterItemViewModel(FilterItemViewModel.Type.ITEM, "/todos", true),
-                        new FilterItemViewModel(FilterItemViewModel.Type.ITEM, "/todos/*", true),
-                        new FilterItemViewModel(FilterItemViewModel.Type.ITEM, "/comments", true)
+                        new FilterItemViewModel(SELECT_ALL, true),
+                        new FilterItemViewModel("/todos", true),
+                        new FilterItemViewModel("/todos/*", true),
+                        new FilterItemViewModel("/comments", true)
                 ))
                 .assertNotComplete()
                 .assertNoErrors()
@@ -75,10 +88,10 @@ public class FilterDialogViewModelTest {
         viewModel.observeItems()
                 .test()
                 .assertValue(Arrays.asList(
-                        new FilterItemViewModel(FilterItemViewModel.Type.SELECT_ALL, SELECT_ALL, false),
-                        new FilterItemViewModel(FilterItemViewModel.Type.ITEM, "/todos", false),
-                        new FilterItemViewModel(FilterItemViewModel.Type.ITEM, "/todos/*", false),
-                        new FilterItemViewModel(FilterItemViewModel.Type.ITEM, "/comments", false)
+                        new FilterItemViewModel(SELECT_ALL, false),
+                        new FilterItemViewModel("/todos", false),
+                        new FilterItemViewModel("/todos/*", false),
+                        new FilterItemViewModel("/comments", false)
                 ))
                 .assertNotComplete()
                 .assertNoErrors()
@@ -92,14 +105,14 @@ public class FilterDialogViewModelTest {
                 new FilterItem("/todos/*", false),
                 new FilterItem("/comments", true)
         ));
-        viewModel.post(new FilterAction.SelectAll(true));
+        viewModel.post(new FilterAction.Update(0, true));
         viewModel.observeItems()
                 .test()
                 .assertValue(Arrays.asList(
-                        new FilterItemViewModel(FilterItemViewModel.Type.SELECT_ALL, SELECT_ALL, true),
-                        new FilterItemViewModel(FilterItemViewModel.Type.ITEM, "/todos", true),
-                        new FilterItemViewModel(FilterItemViewModel.Type.ITEM, "/todos/*", true),
-                        new FilterItemViewModel(FilterItemViewModel.Type.ITEM, "/comments", true)
+                        new FilterItemViewModel(SELECT_ALL, true),
+                        new FilterItemViewModel("/todos", true),
+                        new FilterItemViewModel("/todos/*", true),
+                        new FilterItemViewModel("/comments", true)
                 ))
                 .assertNotComplete()
                 .assertNoErrors()
@@ -113,14 +126,14 @@ public class FilterDialogViewModelTest {
                 new FilterItem("/todos/*", false),
                 new FilterItem("/comments", true)
         ));
-        viewModel.post(new FilterAction.SelectAll(false));
+        viewModel.post(new FilterAction.Update(0, false));
         viewModel.observeItems()
                 .test()
                 .assertValue(Arrays.asList(
-                        new FilterItemViewModel(FilterItemViewModel.Type.SELECT_ALL, SELECT_ALL, false),
-                        new FilterItemViewModel(FilterItemViewModel.Type.ITEM, "/todos", false),
-                        new FilterItemViewModel(FilterItemViewModel.Type.ITEM, "/todos/*", false),
-                        new FilterItemViewModel(FilterItemViewModel.Type.ITEM, "/comments", false)
+                        new FilterItemViewModel(SELECT_ALL, false),
+                        new FilterItemViewModel("/todos", false),
+                        new FilterItemViewModel("/todos/*", false),
+                        new FilterItemViewModel("/comments", false)
                 ))
                 .assertNotComplete()
                 .assertNoErrors()
@@ -134,14 +147,14 @@ public class FilterDialogViewModelTest {
                 new FilterItem("/todos/*", false),
                 new FilterItem("/comments", true)
         ));
-        viewModel.post(new FilterAction.Remove(3));
+        viewModel.post(new FilterAction.Remove(4));
         viewModel.observeItems()
                 .test()
                 .assertValue(Arrays.asList(
-                        new FilterItemViewModel(FilterItemViewModel.Type.SELECT_ALL, SELECT_ALL, false),
-                        new FilterItemViewModel(FilterItemViewModel.Type.ITEM, "/todos", true),
-                        new FilterItemViewModel(FilterItemViewModel.Type.ITEM, "/todos/*", false),
-                        new FilterItemViewModel(FilterItemViewModel.Type.ITEM, "/comments", true)
+                        new FilterItemViewModel(SELECT_ALL, false),
+                        new FilterItemViewModel("/todos", true),
+                        new FilterItemViewModel("/todos/*", false),
+                        new FilterItemViewModel("/comments", true)
                 ))
                 .assertNotComplete()
                 .assertNoErrors()
@@ -155,13 +168,13 @@ public class FilterDialogViewModelTest {
                 new FilterItem("/todos/*", false),
                 new FilterItem("/comments", true)
         ));
-        viewModel.post(new FilterAction.Remove(1));
+        viewModel.post(new FilterAction.Remove(2));
         viewModel.observeItems()
                 .test()
                 .assertValue(Arrays.asList(
-                        new FilterItemViewModel(FilterItemViewModel.Type.SELECT_ALL, SELECT_ALL, true),
-                        new FilterItemViewModel(FilterItemViewModel.Type.ITEM, "/todos", true),
-                        new FilterItemViewModel(FilterItemViewModel.Type.ITEM, "/comments", true)
+                        new FilterItemViewModel(SELECT_ALL, true),
+                        new FilterItemViewModel("/todos", true),
+                        new FilterItemViewModel("/comments", true)
                 ))
                 .assertNotComplete()
                 .assertNoErrors()
@@ -175,14 +188,14 @@ public class FilterDialogViewModelTest {
                 new FilterItem("/todos/*", false),
                 new FilterItem("/comments", true)
         ));
-        viewModel.post(new FilterAction.Update(1, true));
+        viewModel.post(new FilterAction.Update(2, true));
         viewModel.observeItems()
                 .test()
                 .assertValue(Arrays.asList(
-                        new FilterItemViewModel(FilterItemViewModel.Type.SELECT_ALL, SELECT_ALL, true),
-                        new FilterItemViewModel(FilterItemViewModel.Type.ITEM, "/todos", true),
-                        new FilterItemViewModel(FilterItemViewModel.Type.ITEM, "/todos/*", true),
-                        new FilterItemViewModel(FilterItemViewModel.Type.ITEM, "/comments", true)
+                        new FilterItemViewModel(SELECT_ALL, true),
+                        new FilterItemViewModel("/todos", true),
+                        new FilterItemViewModel("/todos/*", true),
+                        new FilterItemViewModel("/comments", true)
                 ))
                 .assertNotComplete()
                 .assertNoErrors()
@@ -196,14 +209,14 @@ public class FilterDialogViewModelTest {
                 new FilterItem("/todos/*", false),
                 new FilterItem("/comments", true)
         ));
-        viewModel.post(new FilterAction.Update(3, true));
+        viewModel.post(new FilterAction.Update(4, true));
         viewModel.observeItems()
                 .test()
                 .assertValue(Arrays.asList(
-                        new FilterItemViewModel(FilterItemViewModel.Type.SELECT_ALL, SELECT_ALL, false),
-                        new FilterItemViewModel(FilterItemViewModel.Type.ITEM, "/todos", true),
-                        new FilterItemViewModel(FilterItemViewModel.Type.ITEM, "/todos/*", false),
-                        new FilterItemViewModel(FilterItemViewModel.Type.ITEM, "/comments", true)
+                        new FilterItemViewModel(SELECT_ALL, false),
+                        new FilterItemViewModel("/todos", true),
+                        new FilterItemViewModel("/todos/*", false),
+                        new FilterItemViewModel("/comments", true)
                 ))
                 .assertNotComplete()
                 .assertNoErrors()
@@ -221,11 +234,11 @@ public class FilterDialogViewModelTest {
         viewModel.observeItems()
                 .test()
                 .assertValue(Arrays.asList(
-                        new FilterItemViewModel(FilterItemViewModel.Type.SELECT_ALL, SELECT_ALL, false),
-                        new FilterItemViewModel(FilterItemViewModel.Type.ITEM, "/todos/*/comments", true),
-                        new FilterItemViewModel(FilterItemViewModel.Type.ITEM, "/todos", true),
-                        new FilterItemViewModel(FilterItemViewModel.Type.ITEM, "/todos/*", false),
-                        new FilterItemViewModel(FilterItemViewModel.Type.ITEM, "/comments", true)
+                        new FilterItemViewModel(SELECT_ALL, false),
+                        new FilterItemViewModel("/todos/*/comments", true),
+                        new FilterItemViewModel("/todos", true),
+                        new FilterItemViewModel("/todos/*", false),
+                        new FilterItemViewModel("/comments", true)
                 ))
                 .assertNotComplete()
                 .assertNoErrors()

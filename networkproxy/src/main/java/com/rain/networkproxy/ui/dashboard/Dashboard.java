@@ -6,6 +6,7 @@ import com.rain.networkproxy.helper.NPLogger;
 import com.rain.networkproxy.model.PendingResponse;
 import com.rain.networkproxy.ui.OverlayService;
 import com.rain.networkproxy.ui.Utils;
+import com.rain.networkproxy.ui.filter.FilterDialog;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -41,6 +42,7 @@ public final class Dashboard extends OverlayService implements DashboardAdapter.
             instanceProvider.provideStateProvider()
     );
 
+    private FilterDialog filterDialog;
     private Background background;
     private RemoveBar removeBar;
     private TextView tvEmpty;
@@ -62,6 +64,7 @@ public final class Dashboard extends OverlayService implements DashboardAdapter.
 
     @Override
     protected void onWindowCreate() {
+        filterDialog = new FilterDialog(this);
         removeBar = new RemoveBar(this);
         background = new Background(this);
         background.setOnClickListener(new View.OnClickListener() {
@@ -87,7 +90,7 @@ public final class Dashboard extends OverlayService implements DashboardAdapter.
         view.findViewById(R.id.ivFilter).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: implement filter UI
+                filterDialog.show();
             }
         });
     }

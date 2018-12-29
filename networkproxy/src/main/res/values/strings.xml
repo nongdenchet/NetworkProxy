@@ -9,4 +9,6 @@
     <string name="network_proxy_error_content">Error Parse Content</string>
     <string name="network_proxy_no_pending_responses">No pending responses</string>
     <string name="network_proxy_select_all">Select all</string>
+    <string name="network_proxy_filter_example">Example: \n/todos \n/todos/* \n/todos/*/comments \nhttp://www.com.example/todos</string>
+    <string name="network_proxy_submit">Submit</string>
 </resources>

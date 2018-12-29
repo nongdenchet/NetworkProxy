@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <CheckBox
+        android:id="@+id/cbActive"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:buttonTint="@android:color/black"
+        android:layout_toStartOf="@+id/ivClose"
+        android:layout_toLeftOf="@+id/ivClose"
+        tools:text="/todos/*/comments"
+        android:textColor="@android:color/black"
+        android:lines="1"
+        android:textSize="@dimen/network_proxy_normal_size"
+        tools:targetApi="lollipop" />
+
+    <ImageView
+        android:id="@+id/ivClose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:padding="@dimen/network_proxy_xxsmall_space"
+        android:src="@drawable/network_proxy_ic_close_black"
+        tools:ignore="ContentDescription" />
+</RelativeLayout>

@@ -3,7 +3,7 @@
     android:layout_width="@dimen/network_proxy_detail_size"
     android:layout_height="@dimen/network_proxy_detail_size"
     android:background="@android:color/white"
-    android:padding="@dimen/network_proxy_small_space">
+    android:padding="@dimen/network_proxy_normal_space">
 
     <LinearLayout
         android:layout_width="wrap_content"

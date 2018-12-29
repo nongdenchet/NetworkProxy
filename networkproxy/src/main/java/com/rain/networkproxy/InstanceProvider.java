@@ -2,6 +2,7 @@ package com.rain.networkproxy;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.rain.networkproxy.helper.BroadcastReceiverProcess;
 import com.rain.networkproxy.helper.NotificationHandler;
@@ -17,7 +18,11 @@ import static com.rain.networkproxy.Constants.STORAGE;
 
 public final class InstanceProvider {
     private static InstanceProvider instance;
+
     private final NPProcess process = new NPProcess();
+
+    @Nullable
+    private FilterStorage filterStorage;
 
     @NonNull
     public static InstanceProvider instance() {
@@ -48,8 +53,17 @@ public final class InstanceProvider {
         return process;
     }
 
+    @NonNull
     public FilterStorage provideFilterStorage(@NonNull Context context) {
-        return new FilterStorageImpl(context.getSharedPreferences(STORAGE, Context.MODE_PRIVATE));
+        if (filterStorage == null) {
+            synchronized (InstanceProvider.class) {
+                if (filterStorage == null) {
+                    filterStorage = new FilterStorageImpl(context.getSharedPreferences(STORAGE, Context.MODE_PRIVATE));
+                }
+            }
+        }
+
+        return filterStorage;
     }
 
     public ResourceProvider provideResourceProvider(@NonNull Context context) {

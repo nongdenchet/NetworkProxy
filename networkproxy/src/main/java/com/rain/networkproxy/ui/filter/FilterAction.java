@@ -1,20 +1,11 @@
 package com.rain.networkproxy.ui.filter;
 
 abstract class FilterAction {
-
     static final class Add extends FilterAction {
         final String rule;
 
         Add(String rule) {
             this.rule = rule;
-        }
-    }
-
-    static final class SelectAll extends FilterAction {
-        final boolean select;
-
-        SelectAll(boolean select) {
-            this.select = select;
         }
     }
 
