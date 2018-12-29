@@ -2,11 +2,17 @@ package com.rain.networkproxy.ui.filter;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+
 import com.rain.networkproxy.R;
 import com.rain.networkproxy.helper.NPLogger;
 import com.rain.networkproxy.helper.ResourceProvider;
 import com.rain.networkproxy.storage.FilterItem;
 import com.rain.networkproxy.storage.FilterStorage;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.BiFunction;
@@ -14,10 +20,9 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.subjects.PublishSubject;
 
-import java.util.ArrayList;
-import java.util.List;
-
 final class FilterDialogViewModel {
+    private static final int SELECT_ALL_POSITION = 0;
+
     private final PublishSubject<FilterAction> actions = PublishSubject.create();
     private final FilterStorage filterStorage;
     private final ResourceProvider resourceProvider;
@@ -53,9 +58,7 @@ final class FilterDialogViewModel {
     }
 
     private List<FilterItem> reduce(List<FilterItem> prev, FilterAction action) {
-        if (action instanceof FilterAction.SelectAll) {
-            return selectAll(prev, ((FilterAction.SelectAll) action).select);
-        } else if (action instanceof FilterAction.Remove) {
+        if (action instanceof FilterAction.Remove) {
             return remove(prev, ((FilterAction.Remove) action).position);
         } else if (action instanceof FilterAction.Update) {
             final FilterAction.Update _action = (FilterAction.Update) action;
@@ -77,7 +80,7 @@ final class FilterDialogViewModel {
     private List<FilterItem> remove(List<FilterItem> prev, final int position) {
         final List<FilterItem> items = new ArrayList<>(prev.size());
         for (int i = 0; i < prev.size(); i++) {
-            if (i != position) {
+            if (i != position - 1) {
                 items.add(prev.get(i));
             }
         }
@@ -85,9 +88,13 @@ final class FilterDialogViewModel {
     }
 
     private List<FilterItem> update(List<FilterItem> prev, final int position, boolean active) {
+        if (position == SELECT_ALL_POSITION) {
+            return selectAll(prev, active);
+        }
+
         final List<FilterItem> items = new ArrayList<>(prev.size());
         for (int i = 0; i < prev.size(); i++) {
-            if (i == position) {
+            if (i == position - 1) {
                 items.add(new FilterItem(prev.get(i).getRule(), active));
             } else {
                 items.add(prev.get(i));
@@ -120,19 +127,21 @@ final class FilterDialogViewModel {
                 .map(new Function<List<FilterItem>, List<FilterItemViewModel>>() {
                     @Override
                     public List<FilterItemViewModel> apply(List<FilterItem> filterItems) {
+                        if (filterItems.isEmpty()) {
+                            return Collections.emptyList();
+                        }
+
                         boolean allSelected = true;
                         final List<FilterItemViewModel> items = new ArrayList<>(filterItems.size() + 1);
 
                         for (FilterItem filterItem : filterItems) {
                             allSelected = allSelected && filterItem.isActive();
                             items.add(new FilterItemViewModel(
-                                    FilterItemViewModel.Type.ITEM,
                                     filterItem.getRule(),
                                     filterItem.isActive()
                             ));
                         }
                         items.add(0, new FilterItemViewModel(
-                                FilterItemViewModel.Type.SELECT_ALL,
                                 resourceProvider.getString(R.string.network_proxy_select_all),
                                 allSelected
                         ));

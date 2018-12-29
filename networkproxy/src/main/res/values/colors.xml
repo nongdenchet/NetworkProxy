@@ -6,4 +6,5 @@
     <color name="network_proxy_light_red">#70ff0000</color>
     <color name="network_proxy_red">#90ff0000</color>
     <color name="network_proxy_divider">#cacaca</color>
+    <color name="network_proxy_grey">#484848</color>
 </resources>

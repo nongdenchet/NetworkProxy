@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="@dimen/network_proxy_small_space">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvFilter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/network_proxy_small_space"
+        android:layout_marginBottom="@dimen/network_proxy_small_space"
+        android:background="@color/network_proxy_divider" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/network_proxy_filter_example"
+        android:textColor="@color/network_proxy_grey"
+        android:textSize="@dimen/network_proxy_small_size" />
+
+    <EditText
+        android:id="@+id/edtRule"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:theme="@style/NetworkProxyEditText"
+        android:textColor="@android:color/black"
+        android:textSize="@dimen/network_proxy_normal_size"
+        tools:ignore="Autofill,LabelFor"
+        tools:text="www.google.com" />
+
+    <Button
+        android:id="@+id/btnSubmit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/network_proxy_grey"
+        android:enabled="false"
+        android:text="@string/network_proxy_submit"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/network_proxy_normal_size"
+        tools:visibility="visible" />
+</LinearLayout>
