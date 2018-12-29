@@ -1,14 +1,6 @@
 package com.rain.networkproxy.helper;
 
-import android.content.Context;
-
-import static org.mockito.Mockito.mock;
-
-public class FakeResourceProvider extends ResourceProvider {
-
-    public FakeResourceProvider() {
-        super(mock(Context.class));
-    }
+public final class FakeResourceProvider implements ResourceProvider {
 
     @Override
     public String getString(int id) {

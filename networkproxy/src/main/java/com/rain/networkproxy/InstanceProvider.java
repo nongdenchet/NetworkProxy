@@ -8,6 +8,7 @@ import com.rain.networkproxy.helper.BroadcastReceiverProcess;
 import com.rain.networkproxy.helper.NotificationHandler;
 import com.rain.networkproxy.helper.RequestFilterProcess;
 import com.rain.networkproxy.helper.ResourceProvider;
+import com.rain.networkproxy.helper.ResourceProviderImpl;
 import com.rain.networkproxy.internal.Dispatcher;
 import com.rain.networkproxy.internal.StateProvider;
 import com.rain.networkproxy.model.NPState;
@@ -67,7 +68,7 @@ public final class InstanceProvider {
     }
 
     public ResourceProvider provideResourceProvider(@NonNull Context context) {
-        return new ResourceProvider(context);
+        return new ResourceProviderImpl(context);
     }
 
     public StateProvider<NPState> provideStateProvider() {
