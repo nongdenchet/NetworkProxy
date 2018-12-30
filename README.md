@@ -46,6 +46,16 @@ new OkHttpClient.Builder()
   .build();
 ```
 
+To mock data from a `pending response`
+
+```
+adb shell "am broadcast -a com.rain.networkproxy.INSTRUCTION -n [YOUR_APP_PACKAGE]/com.rain.networkproxy.NPReceiver \
+    --es data '{"id": "0", "status": 200}' \
+    --es body '"'{"id": 1, "title": "hello"}'"'"
+```
+
+`"id": "0"` is the `pending response id`. You can get it through the UI or from Logcat (Put `NetworkProxy` as filter to see the logs)
+
 ## License
 
     Copyright 2018 Quan Vu.
