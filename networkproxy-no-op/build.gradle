@@ -6,8 +6,8 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
+        versionCode rootProject.ext.libVersionCode
+        versionName rootProject.ext.libVersionName
     }
 
     buildTypes {
@@ -20,6 +20,12 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:support-annotations:28.0.0'
     implementation 'com.squareup.okhttp3:okhttp:3.12.0'
 }
+
+ext {
+    libBintrayName = 'NetworkProxy-NoOperation'
+    libModuleName = 'networkproxy-no-op'
+}
+
+apply from: '../scripts/bintrayConfig.gradle'
