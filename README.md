@@ -1,4 +1,4 @@
-# NetworkProxy
+# NetworkProxy [ ![Download](https://api.bintray.com/packages/nongdenchet/maven/NetworkProxy/images/download.svg) ](https://bintray.com/nongdenchet/maven/NetworkProxy/_latestVersion)
 A network proxy library to intercept and mock response from OkHttp
 
 ## Getting started
@@ -18,8 +18,8 @@ In your `app/build.gradle`:
 
 ```groovy
 dependencies {
-  debugImplementation 'com.github.nongdenchet:networkproxy:0.1.0'
-  releaseImplementation 'com.github.nongdenchet:networkproxy-no-op:0.1.0'
+  debugImplementation 'com.github.nongdenchet:networkproxy:0.1.1'
+  releaseImplementation 'com.github.nongdenchet:networkproxy-no-op:0.1.1'
 }
 ```
 
