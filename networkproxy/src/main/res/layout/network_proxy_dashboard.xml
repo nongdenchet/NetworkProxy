@@ -44,16 +44,15 @@
             tools:ignore="RelativeOverlap" />
     </RelativeLayout>
 
-    <de.hdodenhof.circleimageview.CircleImageView
+    <ImageView
         android:id="@+id/shortcut"
         android:layout_width="@dimen/network_proxy_shortcut_size"
         android:layout_height="@dimen/network_proxy_shortcut_size"
         android:layout_gravity="center"
         android:layout_margin="@dimen/network_proxy_floating_margin"
+        android:background="@drawable/network_proxy_circle"
         android:elevation="@dimen/network_proxy_floating_margin"
         android:src="@drawable/network_proxy_ic_shortcut"
-        app:civ_border_color="@android:color/white"
-        app:civ_border_width="1dp"
-        app:civ_fill_color="@android:color/black"
+        tools:ignore="ContentDescription"
         tools:targetApi="lollipop" />
 </FrameLayout>
