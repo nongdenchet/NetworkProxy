@@ -56,6 +56,9 @@ adb shell "am broadcast -a com.rain.networkproxy.INSTRUCTION -n [YOUR_APP_PACKAG
 
 `"id": "0"` is the `pending response id`. You can get it through the UI or from Logcat (Put `NetworkProxy` as filter to see the logs)
 
+## Demo
+![alt text](https://github.com/nongdenchet/NetworkProxy/blob/master/demo.gif " NetworkProxy")
+
 ## License
 
     Copyright 2018 Quan Vu.
