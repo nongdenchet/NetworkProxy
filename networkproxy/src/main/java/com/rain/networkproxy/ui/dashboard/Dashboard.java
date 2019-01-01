@@ -1,16 +1,5 @@
 package com.rain.networkproxy.ui.dashboard;
 
-import com.rain.networkproxy.InstanceProvider;
-import com.rain.networkproxy.R;
-import com.rain.networkproxy.helper.NPLogger;
-import com.rain.networkproxy.model.PendingResponse;
-import com.rain.networkproxy.ui.OverlayService;
-import com.rain.networkproxy.ui.Utils;
-import com.rain.networkproxy.ui.filter.FilterDialog;
-
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import android.annotation.SuppressLint;
 import android.graphics.Point;
 import android.support.annotation.NonNull;
@@ -25,6 +14,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.rain.networkproxy.InstanceProvider;
+import com.rain.networkproxy.R;
+import com.rain.networkproxy.helper.NPLogger;
+import com.rain.networkproxy.model.PendingResponse;
+import com.rain.networkproxy.ui.OverlayService;
+import com.rain.networkproxy.ui.Utils;
+import com.rain.networkproxy.ui.filter.FilterDialog;
+
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -35,13 +35,13 @@ import static android.view.MotionEvent.ACTION_UP;
 
 public final class Dashboard extends OverlayService implements DashboardAdapter.ItemListener {
     private final CompositeDisposable disposables = new CompositeDisposable();
-    private final InstanceProvider instanceProvider = InstanceProvider.instance();
     private final DashboardAdapter adapter = new DashboardAdapter();
     private final DashboardViewModel viewModel = new DashboardViewModel(
-            instanceProvider.provideDispatcher(),
-            instanceProvider.provideStateProvider()
+            InstanceProvider.instance().provideDispatcher(),
+            InstanceProvider.instance().provideStateProvider()
     );
 
+    private DetailDialog detailDialog;
     private FilterDialog filterDialog;
     private Background background;
     private RemoveBar removeBar;
@@ -58,6 +58,11 @@ public final class Dashboard extends OverlayService implements DashboardAdapter.
     }
 
     @Override
+    public void onShow(PendingResponse pendingResponse) {
+        detailDialog.show(pendingResponse);
+    }
+
+    @Override
     protected View onCreateView(@NonNull ViewGroup window) {
         return LayoutInflater.from(this).inflate(R.layout.network_proxy_dashboard, window, false);
     }
@@ -66,6 +71,7 @@ public final class Dashboard extends OverlayService implements DashboardAdapter.
     protected void onWindowCreate() {
         filterDialog = new FilterDialog(this);
         removeBar = new RemoveBar(this);
+        detailDialog = new DetailDialog(this);
         background = new Background(this);
         background.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -178,7 +184,6 @@ public final class Dashboard extends OverlayService implements DashboardAdapter.
         adapter.setItemListener(this);
     }
 
-    @SuppressWarnings("ConstantConditions")
     @Override
     protected Point getInitPosition() {
         final DisplayMetrics screenSize = Utils.getScreenSize(windowManager);
@@ -222,6 +227,7 @@ public final class Dashboard extends OverlayService implements DashboardAdapter.
 
     @Override
     public void onDestroy() {
+        detailDialog.hide();
         removeBar.detach();
         background.detach();
         disposables.dispose();

@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 import okhttp3.Interceptor;
 
 public final class NetworkProxy {
-    private static NetworkProxy instance;
+    private static volatile NetworkProxy instance;
     private final InstanceProvider instanceProvider;
 
     private NetworkProxy(@NonNull InstanceProvider instanceProvider) {
