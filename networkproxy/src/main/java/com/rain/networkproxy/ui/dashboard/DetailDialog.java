@@ -14,6 +14,7 @@ import com.rain.networkproxy.helper.NPLogger;
 import com.rain.networkproxy.model.PendingResponse;
 import com.rain.networkproxy.ui.Utils;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.concurrent.Callable;
@@ -78,8 +79,17 @@ final class DetailDialog {
                     return "";
                 }
 
-                return new JSONObject(Utils.readFromBuffer(response.headers(), responseBody))
-                        .toString(2);
+                final String json = Utils.readFromBuffer(response.headers(), responseBody);
+                try {
+                    if (json.startsWith("[")) {
+                        return new JSONArray(json).toString(2);
+                    } else {
+                        return new JSONObject(json).toString(2);
+                    }
+                } catch (Exception e) {
+                    NPLogger.logError("DetailDialog#responseToString", e);
+                    return json;
+                }
             }
         });
     }
