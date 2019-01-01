@@ -1,3 +1,4 @@
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/e55ef3ebb42d4fb9a1a6b40d74044b4a)](https://app.codacy.com/app/nongdenchet/NetworkProxy?utm_source=github.com&utm_medium=referral&utm_content=nongdenchet/NetworkProxy&utm_campaign=Badge_Grade_Dashboard)
 # NetworkProxy [ ![Download](https://api.bintray.com/packages/nongdenchet/maven/NetworkProxy/images/download.svg) ](https://bintray.com/nongdenchet/maven/NetworkProxy/_latestVersion) [![Build Status](https://travis-ci.org/nongdenchet/NetworkProxy.svg?branch=develop)](https://travis-ci.org/nongdenchet/NetworkProxy)
 A network proxy library to intercept and mock response from OkHttp
 
