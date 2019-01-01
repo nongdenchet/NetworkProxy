@@ -44,6 +44,12 @@ final class FilterDialogViewModel {
                         return reduce(filterItems, action);
                     }
                 })
+                .map(new Function<List<FilterItem>, List<FilterItem>>() {
+                    @Override
+                    public List<FilterItem> apply(List<FilterItem> filterItems) {
+                        return Collections.unmodifiableList(filterItems);
+                    }
+                })
                 .subscribe(new Consumer<List<FilterItem>>() {
                     @Override
                     public void accept(List<FilterItem> filterItems) {

@@ -3,6 +3,7 @@ package com.rain.networkproxy.model;
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public final class RequestFilter {
@@ -28,7 +29,7 @@ public final class RequestFilter {
             regex.add("^[\\S]*" + rule.replace("*", "((?!\\/)\\S)+") + "$");
         }
 
-        return regex;
+        return Collections.unmodifiableList(regex);
     }
 
     public boolean isMatch(@NonNull String url) {
