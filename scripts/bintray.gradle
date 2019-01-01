@@ -46,16 +46,15 @@ bintray {
         issueTrackerUrl = siteUrl + '/issues'
         vcsUrl = gitUrl
         licenses = allLicenses
-        githubRepo = githubRepository //Optional Github repository
-        githubReleaseNotesFile = 'README.md' //Optional Github readme file
+        githubRepo = githubRepository
+        githubReleaseNotesFile = siteUrl + '/README.md'
         publish = false
         publicDownloadNumbers = true
         version {
             desc = libraryDescription
             gpg {
-                sign = false //Determines whether to GPG sign the files. The default is false
+                sign = false
                 passphrase = properties.getProperty("bintray.gpg.password")
-                //Optional. The passphrase for GPG signing'
             }
         }
     }
