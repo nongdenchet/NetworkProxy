@@ -20,7 +20,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.squareup.okhttp3:okhttp:3.12.0'
+    api 'com.squareup.okhttp3:okhttp:3.12.0'
 }
 
 ext {

@@ -8,8 +8,6 @@ import java.io.IOException;
 
 @SuppressWarnings({"NullableProblems", "unused"})
 public final class NetworkProxy {
-    private static NetworkProxy instance;
-
     private NetworkProxy() {
         // No-op
     }
