@@ -37,7 +37,6 @@ public final class NotificationHandler {
                 .setContentText(context.getString(R.string.network_proxy_notification_description))
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setAutoCancel(false)
-                .setOngoing(true)
                 .setContentIntent(PendingIntent.getActivity(context, 0, intent, 0))
                 .build();
         NotificationManagerCompat.from(context)
