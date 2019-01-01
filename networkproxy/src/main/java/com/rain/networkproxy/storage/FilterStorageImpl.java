@@ -8,6 +8,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -51,6 +52,12 @@ public final class FilterStorageImpl implements FilterStorage {
                         }
 
                         return gson.fromJson(value, TYPE);
+                    }
+                })
+                .map(new Function<List<FilterItem>, List<FilterItem>>() {
+                    @Override
+                    public List<FilterItem> apply(List<FilterItem> filterItems) {
+                        return Collections.unmodifiableList(filterItems);
                     }
                 })
                 .distinctUntilChanged();

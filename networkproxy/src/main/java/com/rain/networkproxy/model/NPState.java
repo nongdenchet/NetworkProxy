@@ -73,8 +73,7 @@ public final class NPState {
         private List<PendingResponse> responses;
         private List<Instruction> instructions;
 
-        private Builder() {
-        }
+        private Builder() {}
 
         public Builder requestFilter(@NonNull RequestFilter requestFilter) {
             this.requestFilter = requestFilter;
@@ -92,7 +91,11 @@ public final class NPState {
         }
 
         public NPState build() {
-            return new NPState(requestFilter, responses, instructions);
+            return new NPState(
+                    requestFilter,
+                    Collections.unmodifiableList(responses),
+                    Collections.unmodifiableList(instructions)
+            );
         }
     }
 

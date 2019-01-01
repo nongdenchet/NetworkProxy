@@ -6,10 +6,7 @@ import com.rain.networkproxy.model.NPState;
 import com.rain.networkproxy.model.PendingResponse;
 import com.rain.networkproxy.model.RequestFilter;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import io.reactivex.Observable;
 import io.reactivex.functions.BiFunction;
@@ -116,7 +113,7 @@ final class NPStateReducer implements BiFunction<NPState, NPCommand, NPState> {
         NPLogger.log("Applying filter: " + rules.toString());
 
         return prev.newBuilder()
-                .requestFilter(new RequestFilter(rules))
+                .requestFilter(new RequestFilter(Collections.unmodifiableList(rules)))
                 .build();
     }
 }
