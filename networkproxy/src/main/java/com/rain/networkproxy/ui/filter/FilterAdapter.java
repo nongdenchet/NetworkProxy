@@ -1,70 +1,107 @@
 package com.rain.networkproxy.ui.filter;
 
+import android.content.Context;
+import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
-import android.support.v7.recyclerview.extensions.ListAdapter;
-import android.support.v7.util.DiffUtil;
-import android.support.v7.widget.RecyclerView;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.ListView;
 
 import com.rain.networkproxy.R;
 
-final class FilterAdapter extends ListAdapter<FilterItemViewModel, FilterAdapter.ViewHolder> {
+import java.util.ArrayList;
+import java.util.List;
+
+final class FilterAdapter extends ArrayAdapter<FilterItemViewModel> {
+    private final List<FilterItemViewModel> items = new ArrayList<>();
     private final Listener listener;
 
-    FilterAdapter(@NonNull Listener listener) {
-        super(callback);
+    FilterAdapter(@NonNull Context context, @NonNull Listener listener) {
+        super(context, -1);
         this.listener = listener;
     }
 
-    private static final DiffUtil.ItemCallback<FilterItemViewModel> callback = new DiffUtil.ItemCallback<FilterItemViewModel>() {
-        @Override
-        public boolean areItemsTheSame(@NonNull FilterItemViewModel oldItem, @NonNull FilterItemViewModel newItem) {
-            return oldItem.getName().equals(newItem.getName());
-        }
+    @Override
+    public int getCount() {
+        return items.size();
+    }
 
-        @Override
-        public boolean areContentsTheSame(@NonNull FilterItemViewModel oldItem, @NonNull FilterItemViewModel newItem) {
-            return oldItem.equals(newItem);
-        }
-    };
+    @Nullable
+    @Override
+    public FilterItemViewModel getItem(int position) {
+        return items.get(position);
+    }
+
+    @MainThread
+    void submitList(List<FilterItemViewModel> newItems) {
+        items.clear();
+        items.addAll(newItems);
+        notifyDataSetChanged();
+    }
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
-        final LayoutInflater layoutInflater = LayoutInflater.from(viewGroup.getContext());
-        final View itemView = layoutInflater.inflate(R.layout.network_proxy_item_filter, viewGroup, false);
-        return new ViewHolder(itemView);
+    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+        final ViewHolder viewHolder;
+        if (convertView == null) {
+            convertView = onCreateView(parent);
+            viewHolder = new ViewHolder(convertView);
+            convertView.setTag(viewHolder);
+        } else {
+            viewHolder = (ViewHolder) convertView.getTag();
+        }
+
+        final FilterItemViewModel item = getItem(position);
+        if (item != null) {
+            viewHolder.ivClose.setVisibility(position == 0 ? View.GONE : View.VISIBLE);
+            viewHolder.cbActive.setChecked(item.isActive());
+            viewHolder.cbActive.jumpDrawablesToCurrentState();
+            viewHolder.cbActive.setText(item.getName());
+        }
+
+        return convertView;
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
-        final FilterItemViewModel item = getItem(position);
-        viewHolder.ivClose.setVisibility(position == 0 ? View.GONE : View.VISIBLE);
-        viewHolder.cbActive.setChecked(item.isActive());
-        viewHolder.cbActive.setText(item.getName());
+    @NonNull
+    private View onCreateView(@NonNull ViewGroup viewGroup) {
+        final LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+        return layoutInflater.inflate(R.layout.network_proxy_item_filter, viewGroup, false);
     }
 
     interface Listener {
         void post(FilterAction action);
     }
 
-    final class ViewHolder extends RecyclerView.ViewHolder {
+    private int getAdapterPosition(View child) {
+        final View itemView = (View) child.getParent();
+        final ListView listView = (ListView) itemView.getParent();
+        if (listView == null) {
+            return AdapterView.INVALID_POSITION;
+        }
+
+        return listView.getPositionForView(itemView);
+    }
+
+    final class ViewHolder {
         final CheckBox cbActive;
         final ImageView ivClose;
 
         ViewHolder(@NonNull View itemView) {
-            super(itemView);
             ivClose = itemView.findViewById(R.id.ivClose);
             ivClose.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (listener != null) {
-                        listener.post(new FilterAction.Remove(getAdapterPosition()));
+                    final int position = getAdapterPosition(v);
+
+                    if (position != AdapterView.INVALID_POSITION) {
+                        listener.post(new FilterAction.Remove(getAdapterPosition(v)));
                     }
                 }
             });
@@ -72,10 +109,11 @@ final class FilterAdapter extends ListAdapter<FilterItemViewModel, FilterAdapter
             cbActive.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if (listener != null) {
-                        final int position = getAdapterPosition();
+                    final int position = getAdapterPosition(buttonView);
+
+                    if (position != AdapterView.INVALID_POSITION) {
                         final FilterItemViewModel item = getItem(position);
-                        if (isChecked != item.isActive()) {
+                        if (item != null && isChecked != item.isActive()) {
                             listener.post(new FilterAction.Update(position, isChecked));
                         }
                     }

@@ -4,14 +4,12 @@ import android.annotation.SuppressLint;
 import android.graphics.Point;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.rain.networkproxy.InstanceProvider;
@@ -33,14 +31,14 @@ import io.reactivex.functions.Consumer;
 
 import static android.view.MotionEvent.ACTION_UP;
 
-public final class Dashboard extends OverlayService implements DashboardAdapter.ItemListener {
+public final class Dashboard extends OverlayService implements DashboardAdapter.Listener {
     private final CompositeDisposable disposables = new CompositeDisposable();
-    private final DashboardAdapter adapter = new DashboardAdapter();
     private final DashboardViewModel viewModel = new DashboardViewModel(
             InstanceProvider.instance().provideDispatcher(),
             InstanceProvider.instance().provideStateProvider()
     );
 
+    private DashboardAdapter adapter;
     private DetailDialog detailDialog;
     private FilterDialog filterDialog;
     private Background background;
@@ -69,6 +67,7 @@ public final class Dashboard extends OverlayService implements DashboardAdapter.
 
     @Override
     protected void onWindowCreate() {
+        adapter = new DashboardAdapter(this, this);
         filterDialog = new FilterDialog(this);
         removeBar = new RemoveBar(this);
         detailDialog = new DetailDialog(this);
@@ -176,12 +175,8 @@ public final class Dashboard extends OverlayService implements DashboardAdapter.
     }
 
     private void initPending(View view) {
-        RecyclerView rvPending = view.findViewById(R.id.rvPending);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        rvPending.setLayoutManager(new LinearLayoutManager(this));
-        rvPending.setAdapter(adapter);
-        rvPending.addItemDecoration(new DividerItemDecoration(this, layoutManager.getOrientation()));
-        adapter.setItemListener(this);
+        ListView lvPending = view.findViewById(R.id.lvPending);
+        lvPending.setAdapter(adapter);
     }
 
     @Override

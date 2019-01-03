@@ -6,7 +6,11 @@ import com.rain.networkproxy.model.NPState;
 import com.rain.networkproxy.model.PendingResponse;
 import com.rain.networkproxy.model.RequestFilter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import io.reactivex.Observable;
 import io.reactivex.functions.BiFunction;

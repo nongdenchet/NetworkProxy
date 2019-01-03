@@ -50,25 +50,6 @@ final class DetailDialog {
         }
     }
 
-    @SuppressLint("InflateParams")
-    @SuppressWarnings("ConstantConditions")
-    private AlertDialog showDialog(String jsonString) {
-        final View view = LayoutInflater.from(context).inflate(R.layout.network_proxy_detail, null);
-        final TextView content = view.findViewById(R.id.content);
-        if (jsonString.isEmpty()) {
-            content.setText(R.string.network_proxy_no_content);
-        } else {
-            content.setText(jsonString);
-        }
-
-        AlertDialog dialog = new AlertDialog.Builder(context)
-                .setView(view)
-                .create();
-        dialog.getWindow().setType(Utils.getOverlayType());
-        dialog.show();
-        return dialog;
-    }
-
     private Single<String> responseToString(final PendingResponse pendingResponse) {
         return Single.fromCallable(new Callable<String>() {
             @Override
@@ -94,15 +75,14 @@ final class DetailDialog {
         });
     }
 
-    void show(final PendingResponse pendingResponse) {
-        hide();
+    private void showContent(final PendingResponse pendingResponse, final View view) {
         disposable = responseToString(pendingResponse)
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<String>() {
                     @Override
-                    public void accept(String content) {
-                        alertDialog = showDialog(content);
+                    public void accept(String jsonString) {
+                        showContent(jsonString, view);
                     }
                 }, new Consumer<Throwable>() {
                     @Override
@@ -110,5 +90,30 @@ final class DetailDialog {
                         NPLogger.logError("DashboardDetailDialog#showDetail", throwable);
                     }
                 });
+    }
+
+    private void showContent(final String jsonString, final View view) {
+        view.findViewById(R.id.progress).setVisibility(View.GONE);
+        view.findViewById(R.id.content).setVisibility(View.VISIBLE);
+
+        final TextView tvContent = view.findViewById(R.id.tvContent);
+        if (jsonString.isEmpty()) {
+            tvContent.setText(R.string.network_proxy_no_content);
+        } else {
+            tvContent.setText(jsonString);
+        }
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    @SuppressLint("InflateParams")
+    void show(final PendingResponse pendingResponse) {
+        hide();
+        final View view = LayoutInflater.from(context).inflate(R.layout.network_proxy_detail, null);
+        alertDialog = new AlertDialog.Builder(context)
+                .setView(view)
+                .create();
+        alertDialog.getWindow().setType(Utils.getOverlayType());
+        alertDialog.show();
+        showContent(pendingResponse, view);
     }
 }

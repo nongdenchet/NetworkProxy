@@ -7,13 +7,12 @@ import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ListView;
 
 import com.rain.networkproxy.InstanceProvider;
 import com.rain.networkproxy.R;
@@ -41,7 +40,7 @@ public final class FilterDialog {
                 InstanceProvider.instance().provideFilterStorage(context),
                 InstanceProvider.instance().provideResourceProvider(context)
         );
-        this.adapter = new FilterAdapter(new FilterAdapter.Listener() {
+        this.adapter = new FilterAdapter(context, new FilterAdapter.Listener() {
             @Override
             public void post(FilterAction action) {
                 viewModel.post(action);
@@ -95,9 +94,8 @@ public final class FilterDialog {
     private View createView() {
         final View view = LayoutInflater.from(context).inflate(R.layout.network_proxy_dialog_filter, null);
 
-        final RecyclerView rvFilter = view.findViewById(R.id.rvFilter);
-        rvFilter.setAdapter(adapter);
-        rvFilter.setLayoutManager(new LinearLayoutManager(context));
+        final ListView lvFilter = view.findViewById(R.id.lvFilter);
+        lvFilter.setAdapter(adapter);
 
         final EditText edtRule = view.findViewById(R.id.edtRule);
         final View btnSubmit = view.findViewById(R.id.btnSubmit);
