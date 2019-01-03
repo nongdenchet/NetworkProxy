@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.rain.networkproxy.helper.BroadcastReceiverProcess;
+import com.rain.networkproxy.helper.EventBus;
 import com.rain.networkproxy.helper.NotificationHandler;
 import com.rain.networkproxy.helper.RequestFilterProcess;
 import com.rain.networkproxy.helper.ResourceProvider;
@@ -20,6 +21,7 @@ public final class InstanceProvider {
     private static volatile InstanceProvider instance;
 
     private final NPProcess process = new NPProcess();
+    private final EventBus eventBus = new EventBus();
 
     private volatile FilterStorage filterStorage;
 
@@ -44,8 +46,8 @@ public final class InstanceProvider {
         return new NotificationHandler(context);
     }
 
-    BroadcastReceiverProcess provideBroadcastReceiverProcess(@NonNull Context context) {
-        return new BroadcastReceiverProcess(provideDispatcher(), context);
+    BroadcastReceiverProcess provideBroadcastReceiverProcess() {
+        return new BroadcastReceiverProcess(provideDispatcher(), provideEventBus());
     }
 
     NPProcess provideProcess() {
@@ -62,6 +64,10 @@ public final class InstanceProvider {
         }
 
         return filterStorage;
+    }
+
+    EventBus provideEventBus() {
+        return eventBus;
     }
 
     public ResourceProvider provideResourceProvider(@NonNull Context context) {
