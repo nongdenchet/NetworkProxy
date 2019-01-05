@@ -5,9 +5,13 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
+import android.support.annotation.ColorInt;
+import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.util.DisplayMetrics;
+import android.view.View;
 import android.view.WindowManager;
+
 import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.ResponseBody;
@@ -23,7 +27,23 @@ import static android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION;
 public final class Utils {
     private static final Charset UTF8 = Charset.forName("UTF-8");
 
-    private Utils() {
+    private Utils() {}
+
+    public static boolean isAttachedToWindow(@NonNull View view) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            return view.isAttachedToWindow();
+        }
+
+        return view.getWindowToken() != null;
+    }
+
+    @ColorInt
+    public static int getColor(@NonNull Context context, @ColorRes int id) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return context.getColor(id);
+        }
+
+        return context.getResources().getColor(id);
     }
 
     public static DisplayMetrics getScreenSize(WindowManager windowManager) {

@@ -1,21 +1,19 @@
 package com.rain.networkproxy.ui.dashboard;
 
-import com.rain.networkproxy.R;
-import com.rain.networkproxy.helper.NPLogger;
-import com.rain.networkproxy.ui.Utils;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewCompat;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+
+import com.rain.networkproxy.R;
+import com.rain.networkproxy.helper.NPLogger;
+import com.rain.networkproxy.ui.Utils;
 
 final class RemoveBar {
     private final Context context;
@@ -44,12 +42,12 @@ final class RemoveBar {
 
     void update(float y) {
         final int color = y > getY() - height ? R.color.network_proxy_red : R.color.network_proxy_light_red;
-        getContentView().setBackgroundColor(ContextCompat.getColor(context,color));
+        getContentView().setBackgroundColor(Utils.getColor(context,color));
     }
 
     void attach() {
         final FrameLayout contentView = getContentView();
-        if (!ViewCompat.isAttachedToWindow(contentView)) {
+        if (!Utils.isAttachedToWindow(contentView)) {
             windowManager.addView(contentView, getLayoutParams(contentView));
         }
     }

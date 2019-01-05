@@ -1,35 +1,40 @@
 package com.rain.networkproxy.helper;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import com.rain.networkproxy.NPCommand;
 import com.rain.networkproxy.internal.Dispatcher;
 import com.rain.networkproxy.model.Instruction;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 
 import java.util.Collections;
 import java.util.List;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.content.LocalBroadcastManager;
-
-import static com.rain.networkproxy.Constants.INSTRUCTION_EVENT;
-import static com.rain.networkproxy.Constants.INSTRUCTION_EVENT_BODY;
-import static com.rain.networkproxy.Constants.INSTRUCTION_EVENT_DATA;
-
 public final class BroadcastReceiverProcess {
-    private final Context context;
+    private final EventBus eventBus;
     private final Dispatcher<NPCommand> dispatcher;
     private final Gson gson = new Gson();
 
+    @Nullable
+    private Disposable disposable;
+
+    public static class BroadcastEvent implements EventBus.Event {
+        final String data;
+        final String body;
+
+        public BroadcastEvent(String data, String body) {
+            this.data = data;
+            this.body = body;
+        }
+    }
+
     public BroadcastReceiverProcess(@NonNull Dispatcher<NPCommand> dispatcher,
-                                    @NonNull Context context) {
+                                    @NonNull EventBus eventBus) {
         this.dispatcher = dispatcher;
-        this.context = context;
+        this.eventBus = eventBus;
     }
 
     private final class Data {
@@ -48,29 +53,40 @@ public final class BroadcastReceiverProcess {
         }
     }
 
-    public void execute() {
-        LocalBroadcastManager.getInstance(context)
-                .registerReceiver(new BroadcastReceiver() {
-                    @Override
-                    public void onReceive(Context context, Intent intent) {
-                        handleIntent(intent);
-                    }
-                }, new IntentFilter(INSTRUCTION_EVENT));
+    private void dispose() {
+        if (disposable != null) {
+            disposable.dispose();
+            disposable = null;
+        }
     }
 
-    private void handleIntent(Intent intent) {
-        final String rawData = intent.getStringExtra(INSTRUCTION_EVENT_DATA);
-        final String body = intent.getStringExtra(INSTRUCTION_EVENT_BODY);
+    public void execute() {
+        dispose();
+        disposable = eventBus.observeEvents()
+                .ofType(BroadcastEvent.class)
+                .subscribe(new Consumer<BroadcastEvent>() {
+                    @Override
+                    public void accept(BroadcastEvent event) {
+                        handleEvent(event);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) {
+                        NPLogger.logError("BroadcastReceiver#observeEvents", throwable);
+                    }
+                });
+    }
 
-        NPLogger.log("Handling intent, data: " + rawData + ", body: " + body);
+    private void handleEvent(BroadcastEvent event) {
+        NPLogger.log("Handling intent, data: " + event.data + ", body: " + event.body);
 
         try {
-            final Data data = gson.fromJson(rawData, Data.class);
+            final Data data = gson.fromJson(event.data, Data.class);
             if (data.id == null) {
                 throw new NullPointerException("data.id should not be null");
             }
 
-            final Instruction instruction = new Instruction(data.id, new Instruction.Input(data.status, body));
+            final Instruction instruction = new Instruction(data.id, new Instruction.Input(data.status, event.body));
             final List<Instruction> instructions = Collections.singletonList(instruction);
             final NPCommand command = new NPCommand.ApplyInstructions(instructions);
 

@@ -1,60 +1,89 @@
 package com.rain.networkproxy.ui.dashboard;
 
-import android.annotation.SuppressLint;
-import android.content.res.Resources;
+import android.content.Context;
 import android.support.annotation.ColorRes;
+import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.recyclerview.extensions.ListAdapter;
-import android.support.v7.util.DiffUtil;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.rain.networkproxy.R;
 import com.rain.networkproxy.model.PendingResponse;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import okhttp3.Response;
 
-final class DashboardAdapter extends ListAdapter<PendingResponse, DashboardAdapter.ViewHolder> {
-    @Nullable
-    private ItemListener itemListener;
+final class DashboardAdapter extends ArrayAdapter<PendingResponse> {
+    private final List<PendingResponse> items = new ArrayList<>();
+    private final Listener listener;
 
-    DashboardAdapter() {
-        super(callback);
+    DashboardAdapter(@NonNull Context context, @NonNull Listener listener) {
+        super(context, -1);
+        this.listener = listener;
     }
 
-    interface ItemListener {
+    interface Listener {
         void onProceed(PendingResponse pendingResponse);
         void onShow(PendingResponse pendingResponse);
     }
 
-    void setItemListener(@Nullable ItemListener itemListener) {
-        this.itemListener = itemListener;
+    @Override
+    public int getCount() {
+        return items.size();
+    }
+
+    @Nullable
+    @Override
+    public PendingResponse getItem(int position) {
+        return items.get(position);
+    }
+
+    @MainThread
+    void submitList(List<PendingResponse> newItems) {
+        items.clear();
+        items.addAll(newItems);
+        notifyDataSetChanged();
     }
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int type) {
-        final LayoutInflater layoutInflater = LayoutInflater.from(viewGroup.getContext());
-        final View itemView = layoutInflater.inflate(R.layout.network_proxy_item_pending, viewGroup, false);
-        return new ViewHolder(itemView);
+    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+        final ViewHolder viewHolder;
+        if (convertView == null) {
+            convertView = onCreateView(parent);
+            viewHolder = new ViewHolder(convertView);
+            convertView.setTag(viewHolder);
+        } else {
+            viewHolder = (ViewHolder) convertView.getTag();
+        }
+
+        final PendingResponse item = getItem(position);
+        if (item != null) {
+            final Response originResponse = item.getResponse();
+            final int code = originResponse.code();
+            final String content = originResponse.request().url().url()
+                    + "(id=" + item.getId()
+                    + ", status=" + code
+                    + ")";
+            viewHolder.tvTitle.setText(content);
+            convertView.setBackgroundColor(getContext().getResources().getColor(getBackgroundColor(code)));
+        }
+
+        return convertView;
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int pos) {
-        final Resources resources = viewHolder.itemView.getContext().getResources();
-        final PendingResponse response = getItem(pos);
-        final Response originResponse = response.getResponse();
-        final int code = originResponse.code();
-        final String content = originResponse.request().url().url()
-                + "(id=" + response.getId()
-                + ", status=" + code
-                + ")";
-        viewHolder.tvTitle.setText(content);
-        viewHolder.itemView.setBackgroundColor(resources.getColor(getBackgroundColor(code)));
+    @NonNull
+    private View onCreateView(@NonNull ViewGroup viewGroup) {
+        final LayoutInflater layoutInflater = LayoutInflater.from(viewGroup.getContext());
+        return layoutInflater.inflate(R.layout.network_proxy_item_pending, viewGroup, false);
     }
 
     @ColorRes
@@ -70,38 +99,38 @@ final class DashboardAdapter extends ListAdapter<PendingResponse, DashboardAdapt
         return color;
     }
 
-    private static final DiffUtil.ItemCallback<PendingResponse> callback = new DiffUtil.ItemCallback<PendingResponse>() {
-        @Override
-        public boolean areItemsTheSame(@NonNull PendingResponse oldItem, @NonNull PendingResponse newItem) {
-            return oldItem.getId().equals(newItem.getId());
+    private int getAdapterPosition(View child) {
+        final View itemView = (View) child.getParent();
+        final ListView listView = (ListView) itemView.getParent();
+        if (listView == null) {
+            return AdapterView.INVALID_POSITION;
         }
 
-        @Override
-        public boolean areContentsTheSame(@NonNull PendingResponse oldItem, @NonNull PendingResponse newItem) {
-            return oldItem.equals(newItem);
-        }
-    };
+        return listView.getPositionForView(itemView);
+    }
 
-    @SuppressLint("InflateParams")
-    final class ViewHolder extends RecyclerView.ViewHolder {
+    final class ViewHolder {
         final TextView tvTitle;
 
         ViewHolder(@NonNull final View itemView) {
-            super(itemView);
             tvTitle = itemView.findViewById(R.id.tvTitle);
             itemView.findViewById(R.id.tvProceed).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (itemListener != null) {
-                        itemListener.onProceed(getItem(getAdapterPosition()));
+                    final int position = getAdapterPosition(v);
+
+                    if (position != AdapterView.INVALID_POSITION) {
+                        listener.onProceed(getItem(getAdapterPosition(v)));
                     }
                 }
             });
             itemView.findViewById(R.id.tvDetail).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (itemListener != null) {
-                        itemListener.onShow(getItem(getAdapterPosition()));
+                    final int position = getAdapterPosition(v);
+
+                    if (position != AdapterView.INVALID_POSITION) {
+                        listener.onShow(getItem(getAdapterPosition(v)));
                     }
                 }
             });

@@ -6,8 +6,10 @@
     android:orientation="vertical"
     android:padding="@dimen/network_proxy_small_space">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rvFilter"
+    <ListView
+        android:id="@+id/lvFilter"
+        android:divider="@null"
+        android:dividerHeight="0dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

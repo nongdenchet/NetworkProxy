@@ -27,8 +27,8 @@ task clean(type: Delete) {
 }
 
 ext {
-    libVersionCode = 4
-    libVersionName = '0.1.3'
+    libVersionCode = 6
+    libVersionName = '0.2.0'
     libPomUrl = 'https://github.com/nongdenchet/NetworkProxy'
     libGithubRepo = 'nongdenchet/NetworkProxy'
     libModuleDesc = 'A network proxy library to intercept and mock response from OkHttp'

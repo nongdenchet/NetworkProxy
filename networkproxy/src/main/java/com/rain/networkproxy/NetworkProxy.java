@@ -2,7 +2,6 @@ package com.rain.networkproxy;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-
 import okhttp3.Interceptor;
 
 public final class NetworkProxy {
@@ -28,7 +27,7 @@ public final class NetworkProxy {
     private void initialize(@NonNull Context context) {
         instanceProvider.provideNotificationHandler(context).execute();
         instanceProvider.provideProcess().startProcess();
-        instanceProvider.provideBroadcastReceiverProcess(context).execute();
+        instanceProvider.provideBroadcastReceiverProcess().execute();
         instanceProvider.provideRequestFilterProcess(context).execute();
     }
 
