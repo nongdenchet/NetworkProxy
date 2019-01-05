@@ -18,8 +18,8 @@ In your `app/build.gradle`:
 
 ```groovy
 dependencies {
-  debugImplementation 'com.github.nongdenchet:networkproxy:0.1.4'
-  releaseImplementation 'com.github.nongdenchet:networkproxy-no-op:0.1.4'
+  debugImplementation 'com.github.nongdenchet:networkproxy:0.2.0'
+  releaseImplementation 'com.github.nongdenchet:networkproxy-no-op:0.2.0'
 }
 ```
 
