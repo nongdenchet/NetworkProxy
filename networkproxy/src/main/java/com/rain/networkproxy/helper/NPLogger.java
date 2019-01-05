@@ -5,8 +5,7 @@ import android.util.Log;
 import com.rain.networkproxy.Constants;
 
 public final class NPLogger {
-    private NPLogger() {
-    }
+    private NPLogger() {}
 
     public static void log(String message) {
         Log.d(Constants.TAG, message + ", Thread: " + Thread.currentThread());
