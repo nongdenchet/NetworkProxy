@@ -3,6 +3,7 @@ package com.rain.networkproxy.ui.dashboard;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -40,10 +41,14 @@ final class DetailDialog {
     }
 
     void hide() {
+        dispose();
         if (alertDialog != null) {
             alertDialog.dismiss();
             alertDialog = null;
         }
+    }
+
+    private void dispose() {
         if (disposable != null) {
             disposable.dispose();
             disposable = null;
@@ -111,9 +116,20 @@ final class DetailDialog {
         final View view = LayoutInflater.from(context).inflate(R.layout.network_proxy_detail, null);
         alertDialog = new AlertDialog.Builder(context)
                 .setView(view)
+                .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        dispose();
+                    }
+                })
                 .create();
         alertDialog.getWindow().setType(Utils.getOverlayType());
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialog) {
+                showContent(pendingResponse, view);
+            }
+        });
         alertDialog.show();
-        showContent(pendingResponse, view);
     }
 }
