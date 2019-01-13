@@ -112,11 +112,12 @@ public final class Dashboard extends OverlayService implements DashboardAdapter.
         shortcut.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent event) {
-                final boolean isInRemoveBar = event.getRawY() > removeBar.getY() - removeBar.getHeight();
+                final boolean isInRemoveBar = event.getRawY() > removeBar.getY();
                 if (event.getAction() == ACTION_UP && isInRemoveBar) {
                     stopSelf();
                     return true;
                 }
+
                 return Dashboard.this.onTouch(view, event);
             }
         });
@@ -166,6 +167,7 @@ public final class Dashboard extends OverlayService implements DashboardAdapter.
                         NPLogger.logError("Dashboard#blurShortcut", throwable);
                     }
                 });
+        disposables.add(hidingDisposable);
     }
 
     @Override

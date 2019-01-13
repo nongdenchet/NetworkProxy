@@ -41,7 +41,7 @@ final class RemoveBar {
     }
 
     void update(float y) {
-        final int color = y > getY() - height ? R.color.network_proxy_red : R.color.network_proxy_light_red;
+        final int color = y > getY() ? R.color.network_proxy_red : R.color.network_proxy_light_red;
         getContentView().setBackgroundColor(Utils.getColor(context,color));
     }
 
