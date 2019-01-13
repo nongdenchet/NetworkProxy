@@ -32,7 +32,9 @@ public abstract class OverlayService extends Service implements View.OnTouchList
     private long startClickTime = 0;
 
     protected abstract View onCreateView(@NonNull ViewGroup window);
+
     protected abstract void onWindowCreate();
+
     protected abstract void onViewCreated(@NonNull View view);
 
     @Override
@@ -40,8 +42,11 @@ public abstract class OverlayService extends Service implements View.OnTouchList
         super.onCreate();
         windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
         onWindowCreate();
+        initWindow();
+        onViewCreated(window);
+    }
 
-        // Initialize window
+    private void initWindow() {
         window = new FrameLayout(this) {
             @Override
             public boolean dispatchKeyEvent(KeyEvent event) {
@@ -54,8 +59,10 @@ public abstract class OverlayService extends Service implements View.OnTouchList
         window.setLayoutParams(new ViewGroup.LayoutParams(WRAP_CONTENT, WRAP_CONTENT));
         window.addView(onCreateView(window));
         window.setFocusable(true);
+        windowManager.addView(window, initLayoutParams());
+    }
 
-        // Initialize layout params
+    private WindowManager.LayoutParams initLayoutParams() {
         final Point position = getInitPosition();
         WindowManager.LayoutParams params = new WindowManager.LayoutParams();
         params.format = PixelFormat.RGBA_8888;
@@ -68,8 +75,7 @@ public abstract class OverlayService extends Service implements View.OnTouchList
         params.height = window.getLayoutParams().height;
         params.x = position.x;
         params.y = position.y;
-        windowManager.addView(window, params);
-        onViewCreated(window);
+        return params;
     }
 
     @Override
@@ -112,12 +118,10 @@ public abstract class OverlayService extends Service implements View.OnTouchList
                 return false;
             }
 
-            WindowManager.LayoutParams params = (WindowManager.LayoutParams) window.getLayoutParams();
-            params.x = (int) (x - view.getWidth());
-            params.y = (int) (y - view.getHeight());
-            windowManager.updateViewLayout(window, params);
+            updatePosition((int) (x - view.getWidth() / 2), (int) (y - view.getHeight() * 1.5));
             onDragMoved(x, y);
         } else if (event.getAction() == ACTION_UP) {
+            moveViewToEdge();
             onDragEnded(x, y);
             if (moving) {
                 moving = false;
@@ -128,16 +132,31 @@ public abstract class OverlayService extends Service implements View.OnTouchList
         return false;
     }
 
+    private void moveViewToEdge() {
+        DisplayMetrics screenSize = Utils.getScreenSize(windowManager);
+        WindowManager.LayoutParams params = (WindowManager.LayoutParams) window.getLayoutParams();
+        updatePosition(
+                params.x > screenSize.widthPixels / 2 ? screenSize.widthPixels : 0,
+                params.y
+        );
+    }
+
+    private void updatePosition(int x, int y) {
+        WindowManager.LayoutParams params = (WindowManager.LayoutParams) window.getLayoutParams();
+        params.x = x;
+        params.y = y;
+        windowManager.updateViewLayout(window, params);
+    }
+
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            DisplayMetrics screenSize = Utils.getScreenSize(windowManager);
-            WindowManager.LayoutParams params = (WindowManager.LayoutParams) window.getLayoutParams();
-            params.x = params.x > screenSize.heightPixels / 2 ? screenSize.widthPixels : 0;
-            params.y = getInitPosition().y;
-            windowManager.updateViewLayout(window, params);
-        }
+        DisplayMetrics screenSize = Utils.getScreenSize(windowManager);
+        WindowManager.LayoutParams params = (WindowManager.LayoutParams) window.getLayoutParams();
+        updatePosition(
+                params.x > screenSize.heightPixels / 2 ? screenSize.widthPixels : 0,
+                getInitPosition().y
+        );
     }
 
     protected Point getInitPosition() {
@@ -149,9 +168,7 @@ public abstract class OverlayService extends Service implements View.OnTouchList
     }
 
     protected void onDragStarted(float x, float y) {}
-
     protected void onDragEnded(float x, float y) {}
-
     protected void onDragMoved(float x, float y) {}
 
     @Override
