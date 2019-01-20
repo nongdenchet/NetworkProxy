@@ -18,7 +18,6 @@ allprojects {
     repositories {
         google()
         jcenter()
-        // maven { url 'https://dl.bintray.com/nongdenchet/maven' }
     }
 }
 
@@ -27,8 +26,8 @@ task clean(type: Delete) {
 }
 
 ext {
-    libVersionCode = 8
-    libVersionName = '0.2.2'
+    libVersionCode = 9
+    libVersionName = '0.3.0'
     libPomUrl = 'https://github.com/nongdenchet/NetworkProxy'
     libGithubRepo = 'nongdenchet/NetworkProxy'
     libModuleDesc = 'A network proxy library to intercept and mock response from OkHttp'
