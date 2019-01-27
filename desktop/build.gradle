@@ -1,9 +1,26 @@
-apply plugin: 'java-library'
+apply plugin: 'java'
 
-dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.google.code.gson:gson:2.8.5'
-}
+def name = 'NetworkProxyClient'
+def version = "0.1.0"
 
 sourceCompatibility = "7"
 targetCompatibility = "7"
+
+// Task to build jar
+task fatJar(type: Jar) {
+    manifest {
+        attributes(
+                'Implementation-Title': name,
+                'Implementation-Version': version,
+                'Main-Class': 'com.rain.networkproxy.Desktop'
+        )
+    }
+    baseName = "$name-$version"
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.google.code.gson:gson:2.8.5'
+}
