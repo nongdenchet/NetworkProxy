@@ -54,10 +54,7 @@ public final class BroadcastReceiverProcess {
     }
 
     private void dispose() {
-        if (disposable != null) {
-            disposable.dispose();
-            disposable = null;
-        }
+        RxUtils.dispose(disposable);
     }
 
     public void execute() {

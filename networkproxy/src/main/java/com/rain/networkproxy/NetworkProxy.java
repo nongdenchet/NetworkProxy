@@ -4,7 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import okhttp3.Interceptor;
 
-import static com.rain.networkproxy.NPProcess.NO_PORT;
+import static com.rain.networkproxy.ServerThread.NO_PORT;
 
 public final class NetworkProxy {
     private static volatile NetworkProxy instance;

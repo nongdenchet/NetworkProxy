@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.rain.networkproxy.InstanceProvider;
 import com.rain.networkproxy.R;
 import com.rain.networkproxy.helper.NPLogger;
+import com.rain.networkproxy.helper.RxUtils;
 import com.rain.networkproxy.model.PendingResponse;
 import com.rain.networkproxy.ui.OverlayService;
 import com.rain.networkproxy.ui.Utils;
@@ -145,10 +146,7 @@ public final class Dashboard extends OverlayService implements DashboardAdapter.
     }
 
     private void cancelHiding() {
-        if (hidingDisposable != null) {
-            hidingDisposable.dispose();
-            hidingDisposable = null;
-        }
+        RxUtils.dispose(hidingDisposable);
     }
 
     private void blurShortcut() {

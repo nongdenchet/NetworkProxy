@@ -2,14 +2,10 @@ package com.rain.networkproxy.helper;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-
 import com.rain.networkproxy.NPCommand;
 import com.rain.networkproxy.internal.Dispatcher;
 import com.rain.networkproxy.storage.FilterItem;
 import com.rain.networkproxy.storage.FilterStorage;
-
-import java.util.List;
-
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
@@ -17,6 +13,8 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
+
+import java.util.List;
 
 public final class RequestFilterProcess {
     private final FilterStorage filterStorage;
@@ -77,9 +75,6 @@ public final class RequestFilterProcess {
     }
 
     private void disposeIfNeeded() {
-        if (disposable != null) {
-            disposable.dispose();
-            disposable = null;
-        }
+        RxUtils.dispose(disposable);
     }
 }

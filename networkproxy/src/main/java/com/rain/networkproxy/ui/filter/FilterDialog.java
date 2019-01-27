@@ -17,6 +17,7 @@ import android.widget.ListView;
 import com.rain.networkproxy.InstanceProvider;
 import com.rain.networkproxy.R;
 import com.rain.networkproxy.helper.NPLogger;
+import com.rain.networkproxy.helper.RxUtils;
 import com.rain.networkproxy.ui.Utils;
 
 import java.util.List;
@@ -134,9 +135,6 @@ public final class FilterDialog {
 
     private void dispose() {
         viewModel.dispose();
-        if (disposable != null) {
-            disposable.dispose();
-            disposable = null;
-        }
+        RxUtils.dispose(disposable);
     }
 }
