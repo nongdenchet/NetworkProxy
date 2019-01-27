@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import com.rain.networkproxy.R;
 import com.rain.networkproxy.helper.NPLogger;
 import com.rain.networkproxy.helper.ResourceProvider;
+import com.rain.networkproxy.helper.RxUtils;
 import com.rain.networkproxy.storage.FilterItem;
 import com.rain.networkproxy.storage.FilterStorage;
 
@@ -122,10 +123,7 @@ final class FilterDialogViewModel {
     }
 
     void dispose() {
-        if (disposable != null) {
-            disposable.dispose();
-            disposable = null;
-        }
+        RxUtils.dispose(disposable);
     }
 
     Observable<List<FilterItemViewModel>> observeItems() {

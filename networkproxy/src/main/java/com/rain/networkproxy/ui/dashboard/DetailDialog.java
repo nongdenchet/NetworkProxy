@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.rain.networkproxy.R;
 import com.rain.networkproxy.helper.NPLogger;
+import com.rain.networkproxy.helper.RxUtils;
 import com.rain.networkproxy.model.PendingResponse;
 import com.rain.networkproxy.ui.Utils;
 
@@ -49,10 +50,7 @@ final class DetailDialog {
     }
 
     private void dispose() {
-        if (disposable != null) {
-            disposable.dispose();
-            disposable = null;
-        }
+        RxUtils.dispose(disposable);
     }
 
     private Single<String> responseToString(final PendingResponse pendingResponse) {
