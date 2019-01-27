@@ -1,1 +1,1 @@
-include ':app', ':networkproxy', ':networkproxy-no-op'
+include ':app', ':networkproxy', ':networkproxy-no-op', ':desktop'
