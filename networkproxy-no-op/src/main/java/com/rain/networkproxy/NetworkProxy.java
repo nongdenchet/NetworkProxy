@@ -16,6 +16,10 @@ public final class NetworkProxy {
         // No-op
     }
 
+    public static void init(Context context, int port) {
+        // No-op
+    }
+
     public static Interceptor interceptor() {
         return new Interceptor() {
             @Override
