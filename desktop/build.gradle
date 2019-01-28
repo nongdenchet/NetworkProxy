@@ -6,7 +6,6 @@ def version = "0.1.0"
 sourceCompatibility = "7"
 targetCompatibility = "7"
 
-// Task to build jar
 task fatJar(type: Jar) {
     manifest {
         attributes(
@@ -22,5 +21,9 @@ task fatJar(type: Jar) {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation project(':data')
     implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.android.support:support-annotations:28.0.0'
+    implementation 'io.reactivex.rxjava2:rxjavafx:2.2.2'
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.5'
 }

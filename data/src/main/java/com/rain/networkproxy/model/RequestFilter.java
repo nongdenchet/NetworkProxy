@@ -2,12 +2,16 @@ package com.rain.networkproxy.model;
 
 import android.support.annotation.NonNull;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public final class RequestFilter {
+    @SerializedName("rules")
     private final List<String> rules;
+    @SerializedName("regex")
     private final List<String> regex;
 
     public RequestFilter(@NonNull List<String> rules) {
@@ -23,7 +27,7 @@ public final class RequestFilter {
                 rule = rule + "/";
             }
             if (rule.startsWith("/")) {
-                rule = rule.substring(1, rule.length());
+                rule = rule.substring(1);
             }
             rule = rule.replace("/", "\\/");
             regex.add("^[\\S]*" + rule.replace("*", "((?!\\/)\\S)+") + "$");

@@ -3,8 +3,12 @@ package com.rain.networkproxy.model;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.google.gson.annotations.SerializedName;
+
 public final class Instruction {
+    @SerializedName("id")
     private final String id;
+    @SerializedName("input")
     private final Input input;
 
     public static final Instruction EMPTY = new Instruction("", new Input());
@@ -50,7 +54,9 @@ public final class Instruction {
     }
 
     public static final class Input {
+        @SerializedName("status")
         private final Integer status;
+        @SerializedName("body")
         private final String body;
 
         public Input() {
