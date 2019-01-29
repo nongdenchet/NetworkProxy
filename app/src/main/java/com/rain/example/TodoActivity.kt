@@ -10,7 +10,9 @@ import com.rain.example.model.ErrorResponse
 import com.rain.example.model.Todo
 import com.rain.example.model.TodoApi
 import com.rain.networkproxy.NetworkProxy
-import kotlinx.android.synthetic.main.activity_todo.*
+import kotlinx.android.synthetic.main.activity_todo.btnLoadMore
+import kotlinx.android.synthetic.main.activity_todo.pbPhotos
+import kotlinx.android.synthetic.main.activity_todo.rvPhotos
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
