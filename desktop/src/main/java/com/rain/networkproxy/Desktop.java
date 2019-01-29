@@ -1,10 +1,16 @@
 package com.rain.networkproxy;
 
 import android.support.annotation.Nullable;
+
 import com.google.gson.Gson;
 import com.rain.networkproxy.model.Instruction;
 import com.rain.networkproxy.model.InternalResponse;
 import com.rain.networkproxy.socket.SocketClient;
+
+import org.json.JSONObject;
+
+import java.util.List;
+
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
@@ -22,13 +28,16 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-import org.json.JSONObject;
-
-import java.util.List;
 
 public class Desktop extends Application {
     private final DesktopState state = new DesktopState();
@@ -36,7 +45,8 @@ public class Desktop extends Application {
     private final CompositeDisposable disposables = new CompositeDisposable();
     private final Gson gson = new Gson();
 
-    private final TextArea detailText = new TextArea();
+    private final TextArea bodyTextArea = new TextArea();
+    private final TextArea statusTextArea = new TextArea();
     private final ListView<InternalResponse> responseList = new ListView<>();
     private final ObservableList<InternalResponse> responseObservableList = FXCollections.observableArrayList();
 
@@ -46,6 +56,7 @@ public class Desktop extends Application {
         borderPan.setPadding(new Insets(10, 10, 10, 10));
         borderPan.setCenter(detailView());
         borderPan.setLeft(pendingResponsesView());
+
         stage.setTitle("NetworkProxyClient");
         stage.setScene(new Scene(borderPan));
         stage.setMinWidth(600);
@@ -79,7 +90,12 @@ public class Desktop extends Application {
         socketClient.stop();
     }
 
-    private Node detailView() {
+    private void cleanTextAreas() {
+        bodyTextArea.setText("");
+        statusTextArea.setText("");
+    }
+
+    private Node detailActions() {
         Button executeBtn = new Button("Execute");
         executeBtn.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -89,21 +105,42 @@ public class Desktop extends Application {
                     return;
                 }
 
-                final String body = detailText.getText().isEmpty() ? null : detailText.getText();
-                final String message = gson.toJson(new Instruction(value.getId(), new Instruction.Input(null, body)));
-                detailText.setText("");
+                final String body = bodyTextArea.getText();
+                final Integer status = Integer.valueOf(statusTextArea.getText());
+                final String message = gson.toJson(new Instruction(value.getId(), new Instruction.Input(status, body)));
+                cleanTextAreas();
+                socketClient.writeMessage(message);
+            }
+        });
+
+        Button skipBtn = new Button("Skip");
+        skipBtn.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                final InternalResponse value = responseList.getSelectionModel().getSelectedItem();
+                if (value == null) {
+                    return;
+                }
+
+                final String message = gson.toJson(new Instruction(value.getId(), new Instruction.Input()));
+                cleanTextAreas();
                 socketClient.writeMessage(message);
             }
         });
 
         HBox hbox = new HBox();
-        hbox.getChildren().addAll(executeBtn);
+        hbox.setSpacing(10);
+        hbox.getChildren().addAll(executeBtn, skipBtn);
         hbox.setAlignment(Pos.CENTER);
         hbox.setPadding(new Insets(10, 10, 10, 10));
+        return hbox;
+    }
 
+    private Node detailView() {
         BorderPane borderPan = new BorderPane();
-        borderPan.setCenter(detailText);
-        borderPan.setBottom(hbox);
+        borderPan.setTop(statusTextArea);
+        borderPan.setCenter(bodyTextArea);
+        borderPan.setBottom(detailActions());
         borderPan.setBorder(new Border(new BorderStroke(
                 Color.BLACK,
                 BorderStrokeStyle.SOLID,
@@ -156,10 +193,10 @@ public class Desktop extends Application {
 
         final String json = internalResponse.getBody();
         if (json == null) {
-            detailText.setText("");
+            cleanTextAreas();
         } else {
-            JSONObject jsonObj = new JSONObject(json);
-            detailText.setText(jsonObj.toString(2));
+            bodyTextArea.setText(new JSONObject(json).toString(2));
+            statusTextArea.setText(String.valueOf(internalResponse.getStatus()));
         }
     }
 

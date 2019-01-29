@@ -1,21 +1,19 @@
 package com.rain.networkproxy;
 
 import android.support.annotation.Nullable;
+
 import com.google.gson.Gson;
 import com.rain.networkproxy.helper.NPLogger;
 import com.rain.networkproxy.helper.RxUtils;
 import com.rain.networkproxy.helper.StreamUtils;
 import com.rain.networkproxy.internal.Dispatcher;
 import com.rain.networkproxy.internal.StateProvider;
-import com.rain.networkproxy.model.*;
+import com.rain.networkproxy.model.Instruction;
+import com.rain.networkproxy.model.InternalResponse;
+import com.rain.networkproxy.model.NPState;
+import com.rain.networkproxy.model.PendingResponse;
+import com.rain.networkproxy.model.SocketMessage;
 import com.rain.networkproxy.ui.Utils;
-import io.reactivex.Observable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
-import io.reactivex.schedulers.Schedulers;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -25,6 +23,14 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Collections;
 import java.util.List;
+
+import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 import static com.rain.networkproxy.model.SocketMessage.INTERNAL_RESPONSES;
 
