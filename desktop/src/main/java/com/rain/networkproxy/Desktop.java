@@ -6,9 +6,11 @@ import com.google.gson.Gson;
 import com.rain.networkproxy.model.Instruction;
 import com.rain.networkproxy.model.InternalResponse;
 import com.rain.networkproxy.socket.SocketClient;
+import com.rain.networkproxy.socket.SocketConnectionStatus;
 
 import org.json.JSONObject;
 
+import java.util.Collections;
 import java.util.List;
 
 import io.reactivex.disposables.CompositeDisposable;
@@ -26,6 +28,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.ToolBar;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Border;
@@ -35,7 +38,9 @@ import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
@@ -52,19 +57,57 @@ public class Desktop extends Application {
 
     @Override
     public void start(Stage stage) {
-        BorderPane borderPan = new BorderPane();
-        borderPan.setPadding(new Insets(10, 10, 10, 10));
-        borderPan.setCenter(detailView());
-        borderPan.setLeft(pendingResponsesView());
-
+        VBox vBox = new VBox();
+        vBox.getChildren().addAll(toolBar(), content());
         stage.setTitle("NetworkProxyClient");
-        stage.setScene(new Scene(borderPan));
+        stage.setScene(new Scene(vBox));
         stage.setMinWidth(600);
         stage.setMinHeight(400);
         stage.show();
 
         socketClient.start();
         bindState();
+    }
+
+    private Node toolBar() {
+        final Text status = new Text();
+        disposables.add(socketClient.getStatus()
+                .observeOn(JavaFxScheduler.platform())
+                .subscribe(new Consumer<SocketConnectionStatus>() {
+                    @Override
+                    public void accept(SocketConnectionStatus socketConnectionStatus) {
+                        status.setText(socketConnectionStatus.name());
+                        if (socketConnectionStatus == SocketConnectionStatus.DISCONNECTED) {
+                            cleanTextAreas();
+                            responseObservableList.setAll(Collections.<InternalResponse>emptyList());
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) {
+                        throwable.printStackTrace();
+                    }
+                }));
+
+        Button connectBtn = new Button("Connect");
+        connectBtn.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                socketClient.connect();
+            }
+        });
+
+        ToolBar toolBar = new ToolBar();
+        toolBar.getItems().addAll(status, connectBtn);
+        return toolBar;
+    }
+
+    private Node content() {
+        BorderPane borderPan = new BorderPane();
+        borderPan.setPadding(new Insets(10, 10, 10, 10));
+        borderPan.setCenter(detailView());
+        borderPan.setLeft(pendingResponsesView());
+        return borderPan;
     }
 
     private void bindState() {
