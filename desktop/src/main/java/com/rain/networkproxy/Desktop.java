@@ -38,7 +38,6 @@ import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -57,10 +56,11 @@ public class Desktop extends Application {
 
     @Override
     public void start(Stage stage) {
-        VBox vBox = new VBox();
-        vBox.getChildren().addAll(toolBar(), content());
+        BorderPane borderPane = new BorderPane();
+        borderPane.setTop(toolBar());
+        borderPane.setCenter(content());
         stage.setTitle("NetworkProxyClient");
-        stage.setScene(new Scene(vBox));
+        stage.setScene(new Scene(borderPane));
         stage.setMinWidth(600);
         stage.setMinHeight(400);
         stage.show();
