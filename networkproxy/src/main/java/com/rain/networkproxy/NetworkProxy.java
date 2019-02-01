@@ -42,10 +42,12 @@ public final class NetworkProxy {
     }
 
     private void initialize(@NonNull Context context, int port) {
-        instanceProvider.provideNotificationHandler(context).execute();
         instanceProvider.provideProcess().startProcess(port);
         instanceProvider.provideBroadcastReceiverProcess().execute();
-        instanceProvider.provideRequestFilterProcess(context).execute();
+        if (port == NO_PORT) {
+            instanceProvider.provideNotificationHandler(context).execute();
+            instanceProvider.provideRequestFilterProcess(context).execute();
+        }
     }
 
     private Interceptor getInterceptor() {
