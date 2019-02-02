@@ -6,6 +6,7 @@ import com.google.gson.annotations.SerializedName;
 public final class SocketMessage<T> {
     public static int INTERNAL_RESPONSES = 1;
     public static int FILTER = 2;
+    public static int INSTRUCTION = 3;
 
     @SerializedName("type")
     private final int type;
