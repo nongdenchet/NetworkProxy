@@ -1,4 +1,4 @@
-package com.rain.networkproxy.storage;
+package com.rain.networkproxy.model;
 
 import android.support.annotation.NonNull;
 import com.google.gson.annotations.SerializedName;

@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.rain.networkproxy.NPCommand;
 import com.rain.networkproxy.internal.Dispatcher;
-import com.rain.networkproxy.storage.FilterItem;
+import com.rain.networkproxy.model.FilterItem;
 import com.rain.networkproxy.storage.FilterStorage;
 import io.reactivex.Observable;
 import io.reactivex.Single;

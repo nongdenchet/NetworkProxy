@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.rain.networkproxy.model.FilterItem;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;

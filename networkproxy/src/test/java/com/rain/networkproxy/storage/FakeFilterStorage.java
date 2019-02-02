@@ -2,6 +2,8 @@ package com.rain.networkproxy.storage;
 
 import android.support.annotation.NonNull;
 
+import com.rain.networkproxy.model.FilterItem;
+
 import java.util.Collections;
 import java.util.List;
 

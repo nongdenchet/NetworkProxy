@@ -3,8 +3,8 @@ apply plugin: 'java'
 def name = 'NetworkProxyClient'
 def version = "0.1.0"
 
-sourceCompatibility = "7"
-targetCompatibility = "7"
+sourceCompatibility = "8"
+targetCompatibility = "8"
 
 task fatJar(type: Jar) {
     manifest {

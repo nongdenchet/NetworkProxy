@@ -4,7 +4,7 @@ import com.rain.networkproxy.R;
 import com.rain.networkproxy.helper.FakeResourceProvider;
 import com.rain.networkproxy.helper.ResourceProvider;
 import com.rain.networkproxy.storage.FakeFilterStorage;
-import com.rain.networkproxy.storage.FilterItem;
+import com.rain.networkproxy.model.FilterItem;
 import com.rain.networkproxy.storage.FilterStorage;
 
 import org.junit.After;

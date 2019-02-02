@@ -13,6 +13,7 @@ import com.rain.networkproxy.model.InternalResponse;
 import com.rain.networkproxy.model.NPState;
 import com.rain.networkproxy.model.PendingResponse;
 import com.rain.networkproxy.model.SocketMessage;
+import com.rain.networkproxy.model.SocketMessageParser;
 import com.rain.networkproxy.ui.Utils;
 
 import java.io.DataInputStream;
@@ -32,15 +33,17 @@ import io.reactivex.schedulers.Schedulers;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-import static com.rain.networkproxy.model.SocketMessage.INTERNAL_RESPONSES;
-
+/**
+ * ServerThread to sync data with Desktop app
+ */
 final class ServerThread extends Thread {
     static final int NO_PORT = -1;
 
     private final int port;
+    private final Gson gson;
     private final Dispatcher<NPCommand> dispatcher;
     private final StateProvider<NPState> stateProvider;
-    private final Gson gson = new Gson();
+    private final SocketMessageParser socketParser;
 
     @Nullable
     private ServerSocket serverSocket;
@@ -51,6 +54,8 @@ final class ServerThread extends Thread {
         this.port = port;
         this.dispatcher = dispatcher;
         this.stateProvider = stateProvider;
+        this.gson = new Gson();
+        this.socketParser = new SocketMessageParser(gson);
     }
 
     private void listenToPendingResponses(final DataOutputStream dataOutputStream) {
@@ -71,10 +76,16 @@ final class ServerThread extends Thread {
                         return toInternalResponse(pendingResponses);
                     }
                 })
-                .map(new Function<List<InternalResponse>, String>() {
+                .map(new Function<List<InternalResponse>, SocketMessage<List<InternalResponse>>>() {
                     @Override
-                    public String apply(List<InternalResponse> internalResponses) {
-                        return gson.toJson(new SocketMessage<>(INTERNAL_RESPONSES, internalResponses), SocketMessage.class);
+                    public SocketMessage<List<InternalResponse>> apply(List<InternalResponse> internalResponses) {
+                        return new SocketMessage<>(SocketMessage.INTERNAL_RESPONSES, internalResponses);
+                    }
+                })
+                .map(new Function<SocketMessage<List<InternalResponse>>, String>() {
+                    @Override
+                    public String apply(SocketMessage<List<InternalResponse>> message) {
+                        return gson.toJson(message, SocketMessage.class);
                     }
                 })
                 .subscribe(new Consumer<String>() {
@@ -131,9 +142,18 @@ final class ServerThread extends Thread {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void handleMessage(String message) {
-        final Instruction instruction = gson.fromJson(message, Instruction.class);
-        dispatcher.dispatch(new NPCommand.ApplyInstructions(Collections.singletonList(instruction)));
+        final SocketMessage socketMessage = socketParser.parseMessage(message);
+        final Object payload = socketMessage.getPayload();
+
+        if (payload instanceof Instruction) {
+            dispatcher.dispatch(new NPCommand.ApplyInstructions(Collections.singletonList((Instruction) payload)));
+        } else if (payload instanceof List<?>) {
+            dispatcher.dispatch(new NPCommand.ApplyFilter((List<String>) payload));
+        } else {
+            throw new IllegalArgumentException("No support message");
+        }
     }
 
     @Override
