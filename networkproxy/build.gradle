@@ -17,6 +17,15 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
+    sourceSets {
+        main {
+            java {
+                srcDir 'src/main/java'
+                srcDir "${rootProject.projectDir}/data/src/main/java"
+            }
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -34,7 +43,6 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation project(':data')
     api 'com.squareup.okhttp3:okhttp:3.12.1'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
     implementation 'io.reactivex.rxjava2:rxjava:2.2.5'
