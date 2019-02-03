@@ -13,7 +13,6 @@ import com.rain.networkproxy.utils.RxUtils;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
@@ -84,6 +83,7 @@ public final class SocketClient {
         if (status.getValue() == SocketConnectionStatus.CONNECTED) {
             return;
         }
+
         connectSignal.onNext(new Object());
     }
 
@@ -113,47 +113,35 @@ public final class SocketClient {
 
     @SuppressWarnings("unchecked")
     private Completable makeConnection() {
-        return Completable.fromAction(() -> {
-             DataInputStream inputStream = null;
-             DataOutputStream outputStream = null;
-
+        final Completable completable = Completable.fromAction(() -> {
             try (Socket socket = new Socket()) {
                 socket.connect(new InetSocketAddress(HOST, PORT));
                 status.onNext(SocketConnectionStatus.CONNECTED);
                 System.out.println("Server connected");
 
-                inputStream = new DataInputStream(socket.getInputStream());
-                outputStream = new DataOutputStream(socket.getOutputStream());
-                startListenToWriteMessage(outputStream);
-                startSyncFilters();
+                try (DataInputStream inputStream = new DataInputStream(socket.getInputStream());
+                     DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream())) {
+                    startListenToWriteMessage(outputStream);
+                    startSyncFilters();
 
-                while (!socket.isClosed()) {
-                    final String message = inputStream.readUTF();
-                    System.out.println("Message: " + message);
+                    while (!socket.isClosed()) {
+                        final String message = inputStream.readUTF();
+                        System.out.println("Message: " + message);
 
-                    final SocketMessage socketMessage = socketParser.parseMessage(message);
-                    final SocketHandler handler = socketAdapter.getSocketHandler(socketMessage.getType());
-                    handler.execute(socketMessage.getPayload());
-                }
-            } catch (IOException e) {
-                // No-op
-            } finally {
-                try {
-                    if (outputStream != null) {
-                        outputStream.close();
+                        final SocketMessage socketMessage = socketParser.parseMessage(message);
+                        final SocketHandler handler = socketAdapter.getSocketHandler(socketMessage.getType());
+                        handler.execute(socketMessage.getPayload());
                     }
-                    if (inputStream != null) {
-                        inputStream.close();
-                    }
-                } catch (IOException e) {
-                    // No-op
                 }
             }
-        }).doOnSubscribe(disposable -> status.onNext(SocketConnectionStatus.CONNECTING)).doOnTerminate(() -> {
-            System.out.println("Connection closed");
-            status.onNext(SocketConnectionStatus.DISCONNECTED);
-            RxUtils.dispose(writeDisposable);
-            RxUtils.dispose(syncFilterDisposable);
         });
+
+        return completable.doOnSubscribe(disposable -> status.onNext(SocketConnectionStatus.CONNECTING))
+                .doOnTerminate(() -> {
+                    System.out.println("Connection closed");
+                    status.onNext(SocketConnectionStatus.DISCONNECTED);
+                    RxUtils.dispose(writeDisposable);
+                    RxUtils.dispose(syncFilterDisposable);
+                });
     }
 }
