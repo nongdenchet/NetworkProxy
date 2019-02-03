@@ -13,6 +13,7 @@ import com.rain.networkproxy.storage.FilterEvent;
 import com.rain.networkproxy.storage.FilterInteractor;
 import com.rain.networkproxy.storage.FilterStorage;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.Collections;
@@ -288,7 +289,11 @@ public class Desktop extends Application {
         if (json == null) {
             cleanTextAreas();
         } else {
-            bodyTextArea.setText(new JSONObject(json).toString(2));
+            if (json.startsWith("[")) {
+                bodyTextArea.setText(new JSONArray(json).toString(2));
+            } else {
+                bodyTextArea.setText(new JSONObject(json).toString(2));
+            }
             statusTextArea.setText(String.valueOf(internalResponse.getStatus()));
         }
     }
