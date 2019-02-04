@@ -1,4 +1,4 @@
-package com.rain.networkproxy.storage;
+package com.rain.networkproxy.filter;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;

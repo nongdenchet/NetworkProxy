@@ -3,15 +3,17 @@ package com.rain.networkproxy;
 import android.support.annotation.Nullable;
 
 import com.google.gson.Gson;
+import com.rain.networkproxy.filter.FilterEvent;
+import com.rain.networkproxy.filter.FilterInteractor;
+import com.rain.networkproxy.filter.FilterStorage;
 import com.rain.networkproxy.model.FilterItem;
 import com.rain.networkproxy.model.Instruction;
 import com.rain.networkproxy.model.InternalResponse;
 import com.rain.networkproxy.model.SocketMessage;
+import com.rain.networkproxy.setting.SettingStorage;
 import com.rain.networkproxy.socket.SocketClient;
 import com.rain.networkproxy.socket.SocketConnectionStatus;
-import com.rain.networkproxy.storage.FilterEvent;
-import com.rain.networkproxy.storage.FilterInteractor;
-import com.rain.networkproxy.storage.FilterStorage;
+import com.rain.networkproxy.utils.StringUtils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -56,8 +58,9 @@ import javafx.util.StringConverter;
 public class Desktop extends Application {
     private final DesktopState state = new DesktopState();
     private final FilterStorage filterStorage = new FilterStorage();
+    private final SettingStorage settingStorage = new SettingStorage();
     private final FilterInteractor filterInteractor = new FilterInteractor(filterStorage);
-    private final SocketClient socketClient = new SocketClient(state, filterStorage);
+    private final SocketClient socketClient = new SocketClient(state, filterStorage, settingStorage);
     private final CompositeDisposable disposables = new CompositeDisposable();
     private final Gson gson = new Gson();
 
@@ -94,7 +97,26 @@ public class Desktop extends Application {
         result.ifPresent(value -> filterInteractor.handle(new FilterEvent.Create(value)));
     }
 
+    private void showChangePort() {
+        final TextInputDialog dialog = new TextInputDialog(String.valueOf(settingStorage.getPort()));
+        dialog.setTitle("Change Port");
+        dialog.setContentText("Enter your port:");
+
+        final Optional<String> result = dialog.showAndWait();
+        result.filter(StringUtils::isInteger)
+                .ifPresent(value -> settingStorage.setPort(Integer.valueOf(value)));
+    }
+
     private Node toolBar() {
+        final Button btnConnect = new Button("Connect");
+        btnConnect.setOnMouseClicked(event -> socketClient.connect());
+
+        final Button btnAddFilter = new Button("Add Filter");
+        btnAddFilter.setOnMouseClicked(event -> showAddFilter());
+
+        final Button btnChangePort = new Button("Change Port");
+        btnChangePort.setOnMouseClicked(event -> showChangePort());
+
         final Text status = new Text();
         disposables.add(socketClient.getStatus()
                 .observeOn(JavaFxScheduler.platform())
@@ -103,17 +125,14 @@ public class Desktop extends Application {
                     if (socketConnectionStatus == SocketConnectionStatus.DISCONNECTED) {
                         cleanTextAreas();
                         responseObservableList.setAll(Collections.emptyList());
+                        btnConnect.setDisable(false);
+                    } else if (socketConnectionStatus == SocketConnectionStatus.CONNECTED) {
+                        btnConnect.setDisable(true);
                     }
                 }));
 
-        final Button btnConnect = new Button("Connect");
-        btnConnect.setOnMouseClicked(event -> socketClient.connect());
-
-        final Button btnAddFilter = new Button("Add Filter");
-        btnAddFilter.setOnMouseClicked(event -> showAddFilter());
-
         final ToolBar toolBar = new ToolBar();
-        toolBar.getItems().addAll(status, btnConnect, btnAddFilter);
+        toolBar.getItems().addAll(status, btnConnect, btnAddFilter, btnChangePort);
         return toolBar;
     }
 

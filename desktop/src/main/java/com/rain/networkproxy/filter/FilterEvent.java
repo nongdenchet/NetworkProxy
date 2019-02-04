@@ -1,4 +1,4 @@
-package com.rain.networkproxy.storage;
+package com.rain.networkproxy.filter;
 
 public abstract class FilterEvent {
     public static class Update extends FilterEvent {

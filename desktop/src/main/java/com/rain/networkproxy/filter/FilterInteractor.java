@@ -1,4 +1,4 @@
-package com.rain.networkproxy.storage;
+package com.rain.networkproxy.filter;
 
 import android.support.annotation.Nullable;
 
@@ -13,8 +13,8 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.subjects.PublishSubject;
 
 public final class FilterInteractor {
-    private final FilterStorage filterStorage;
-    private final PublishSubject<FilterEvent> events;
+    private final com.rain.networkproxy.filter.FilterStorage filterStorage;
+    private final PublishSubject<com.rain.networkproxy.filter.FilterEvent> events;
 
     @Nullable
     private Disposable disposable;
@@ -24,7 +24,7 @@ public final class FilterInteractor {
         this.events = PublishSubject.create();
     }
 
-    public void handle(FilterEvent event) {
+    public void handle(com.rain.networkproxy.filter.FilterEvent event) {
         events.onNext(event);
     }
 
@@ -36,23 +36,23 @@ public final class FilterInteractor {
                 .subscribe(filterStorage::setFilters);
     }
 
-    private List<FilterItem> reduce(List<FilterItem> prev, FilterEvent event) {
-        if (event instanceof FilterEvent.Create) {
-            return add(prev, (FilterEvent.Create) event);
+    private List<FilterItem> reduce(List<FilterItem> prev, com.rain.networkproxy.filter.FilterEvent event) {
+        if (event instanceof com.rain.networkproxy.filter.FilterEvent.Create) {
+            return add(prev, (com.rain.networkproxy.filter.FilterEvent.Create) event);
         }
 
-        if (event instanceof FilterEvent.Update) {
-            return update(prev, (FilterEvent.Update) event);
+        if (event instanceof com.rain.networkproxy.filter.FilterEvent.Update) {
+            return update(prev, (com.rain.networkproxy.filter.FilterEvent.Update) event);
         }
 
-        if (event instanceof FilterEvent.Delete) {
-            return delete(prev, (FilterEvent.Delete) event);
+        if (event instanceof com.rain.networkproxy.filter.FilterEvent.Delete) {
+            return delete(prev, (com.rain.networkproxy.filter.FilterEvent.Delete) event);
         }
 
         return prev;
     }
 
-    private List<FilterItem> add(List<FilterItem> prev, FilterEvent.Create event) {
+    private List<FilterItem> add(List<FilterItem> prev, com.rain.networkproxy.filter.FilterEvent.Create event) {
         for (FilterItem item : prev) {
             if (item.getRule().equals(event.rule)) {
                 return prev;
@@ -65,7 +65,7 @@ public final class FilterInteractor {
         return result;
     }
 
-    private List<FilterItem> delete(List<FilterItem> prev, FilterEvent.Delete event) {
+    private List<FilterItem> delete(List<FilterItem> prev, com.rain.networkproxy.filter.FilterEvent.Delete event) {
         final List<FilterItem> result = new ArrayList<>(prev.size());
         for (FilterItem item : prev) {
             if (!item.getRule().equals(event.rule)) {
