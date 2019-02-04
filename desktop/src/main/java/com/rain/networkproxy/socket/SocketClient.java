@@ -7,8 +7,9 @@ import com.rain.networkproxy.DesktopState;
 import com.rain.networkproxy.model.FilterItem;
 import com.rain.networkproxy.model.SocketMessage;
 import com.rain.networkproxy.model.SocketMessageParser;
+import com.rain.networkproxy.setting.SettingStorage;
 import com.rain.networkproxy.socket.handler.SocketHandler;
-import com.rain.networkproxy.storage.FilterStorage;
+import com.rain.networkproxy.filter.FilterStorage;
 import com.rain.networkproxy.utils.RxUtils;
 
 import java.io.DataInputStream;
@@ -26,10 +27,10 @@ import io.reactivex.subjects.PublishSubject;
 
 public final class SocketClient {
     private static final String HOST = "127.0.0.1";
-    private static final int PORT = 8000;
 
     private final Gson gson;
     private final FilterStorage filterStorage;
+    private final SettingStorage settingStorage;
     private final SocketHandlerAdapter socketAdapter;
     private final SocketMessageParser socketParser;
     private final BehaviorSubject<SocketConnectionStatus> status;
@@ -43,9 +44,10 @@ public final class SocketClient {
     @Nullable
     private Disposable syncFilterDisposable;
 
-    public SocketClient(DesktopState state, FilterStorage filterStorage) {
+    public SocketClient(DesktopState state, FilterStorage filterStorage, SettingStorage settingStorage) {
         this.gson = new Gson();
         this.filterStorage = filterStorage;
+        this.settingStorage = settingStorage;
         this.socketAdapter = new SocketHandlerAdapter(state);
         this.socketParser = new SocketMessageParser(gson);
         this.status = BehaviorSubject.createDefault(SocketConnectionStatus.DISCONNECTED);
@@ -115,7 +117,7 @@ public final class SocketClient {
     private Completable makeConnection() {
         final Completable completable = Completable.fromAction(() -> {
             try (Socket socket = new Socket()) {
-                socket.connect(new InetSocketAddress(HOST, PORT));
+                socket.connect(new InetSocketAddress(HOST, settingStorage.getPort()));
                 status.onNext(SocketConnectionStatus.CONNECTED);
                 System.out.println("Server connected");
 

@@ -1,6 +1,6 @@
 package com.rain.networkproxy.support;
 
-public class Pair<A, B> {
+public final class Pair<A, B> {
     public final A first;
     public final B second;
 
