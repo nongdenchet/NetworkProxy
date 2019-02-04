@@ -7,7 +7,7 @@ class TodoApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        NetworkProxy.init(this)
-//        NetworkProxy.init(this, 9000)
+//        NetworkProxy.init(this)
+        NetworkProxy.init(this, 9000)
     }
 }
