@@ -1,3 +1,4 @@
+apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'java'
 
 def name = 'NetworkProxyClient'
@@ -6,7 +7,9 @@ def version = "0.5.0"
 sourceCompatibility = "8"
 targetCompatibility = "8"
 
-task fatJar(type: Jar) {
+shadowJar {
+    baseName = "$name-$version"
+
     manifest {
         attributes(
                 'Implementation-Title': name,
@@ -14,9 +17,6 @@ task fatJar(type: Jar) {
                 'Main-Class': 'com.rain.networkproxy.Desktop'
         )
     }
-    baseName = "$name-$version"
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-    with jar
 }
 
 dependencies {
