@@ -33,6 +33,26 @@ new OkHttpClient.Builder()
   .build();
 ```
 
+### Using with desktop app
+
+- In your `Application` class:
+
+```java
+public class ExampleApplication extends Application {
+
+  @Override public void onCreate() {
+    super.onCreate();
+    NetworkProxy.init(this, 9000); // 9000 is the port that is later use to connect from Desktop app
+    // Normal app init code...
+  }
+}
+```
+
+- Connect your device with adb and run `adb forward tcp:8000 tcp:9000` to connect port 8000 of your computer and port 9000 of your device
+- We provide a [client desktop](https://github.com/nongdenchet/NetworkProxy/blob/master/desktop/release/NetworkProxyClient-0.5.0-all.jar) app to use and interact with pending response
+- Demo:
+![alt text](https://github.com/nongdenchet/NetworkProxy/blob/master/socket_demo.gif " NetworkProxy")
+
 ### Using without desktop app
 
 - In your `Application` class:
@@ -60,26 +80,6 @@ adb shell "am broadcast -a com.rain.networkproxy.INSTRUCTION -n [YOUR_APP_PACKAG
 
 - Demo:
 ![alt text](https://github.com/nongdenchet/NetworkProxy/blob/master/demo.gif " NetworkProxy")
-
-### Using with desktop app
-
-- In your `Application` class:
-
-```java
-public class ExampleApplication extends Application {
-
-  @Override public void onCreate() {
-    super.onCreate();
-    NetworkProxy.init(this, 9000); // 9000 is the port that is later use to connect from Desktop app
-    // Normal app init code...
-  }
-}
-```
-
-- Connect your device with adb and run `adb forward tcp:8000 tcp:9000` to connect port 8000 of your computer and port 9000 of your device
-- We provide a [client desktop](https://github.com/nongdenchet/NetworkProxy/blob/master/desktop/release/NetworkProxyClient-0.5.0-all.jar) app to use and interact with pending response
-- Demo:
-![alt text](https://github.com/nongdenchet/NetworkProxy/blob/master/socket_demo.gif " NetworkProxy")
 
 
 ## License
