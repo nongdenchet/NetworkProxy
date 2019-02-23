@@ -4,18 +4,19 @@ import android.support.annotation.Nullable;
 
 import com.google.gson.Gson;
 import com.rain.networkproxy.DesktopState;
+import com.rain.networkproxy.filter.FilterStorage;
 import com.rain.networkproxy.model.FilterItem;
 import com.rain.networkproxy.model.SocketMessage;
 import com.rain.networkproxy.model.SocketMessageParser;
 import com.rain.networkproxy.setting.SettingStorage;
 import com.rain.networkproxy.socket.handler.SocketHandler;
-import com.rain.networkproxy.filter.FilterStorage;
 import com.rain.networkproxy.utils.RxUtils;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketException;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
@@ -26,6 +27,8 @@ import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.PublishSubject;
 
 public final class SocketClient {
+    private static final int CONNECT = 0;
+    private static final int DISCONNECT = 1;
     private static final String HOST = "127.0.0.1";
 
     private final Gson gson;
@@ -34,7 +37,7 @@ public final class SocketClient {
     private final SocketHandlerAdapter socketAdapter;
     private final SocketMessageParser socketParser;
     private final BehaviorSubject<SocketConnectionStatus> status;
-    private final PublishSubject<Object> connectSignal;
+    private final PublishSubject<Integer> connectSignal;
     private final PublishSubject<String> writeMessage;
 
     @Nullable
@@ -61,32 +64,45 @@ public final class SocketClient {
                 .distinctUntilChanged();
     }
 
-    public void start() {
+    public synchronized void start() {
         stop();
         listenToSignal();
         connect();
     }
 
-    private void listenToSignal() {
-        RxUtils.dispose(signalDisposable);
-        signalDisposable = connectSignal.serialize()
-                .observeOn(Schedulers.io())
-                .switchMapCompletable(ignored -> makeConnection().onErrorComplete())
-                .subscribe(Functions.EMPTY_ACTION);
-    }
-
-    public void stop() {
+    public synchronized void stop() {
         RxUtils.dispose(signalDisposable);
         RxUtils.dispose(writeDisposable);
         RxUtils.dispose(syncFilterDisposable);
     }
 
-    public void connect() {
-        if (status.getValue() == SocketConnectionStatus.CONNECTED) {
+    private void listenToSignal() {
+        RxUtils.dispose(signalDisposable);
+        signalDisposable = connectSignal.serialize()
+                .distinctUntilChanged()
+                .switchMapCompletable(value -> value == CONNECT ? makeConnection().onErrorComplete()
+                        : Completable.complete())
+                .subscribe(Functions.EMPTY_ACTION);
+    }
+
+    public void disconnect() {
+        if (!isConnected()) {
             return;
         }
 
-        connectSignal.onNext(new Object());
+        connectSignal.onNext(DISCONNECT);
+    }
+
+    public synchronized boolean isConnected() {
+        return status.getValue() == SocketConnectionStatus.CONNECTED;
+    }
+
+    public void connect() {
+        if (isConnected()) {
+            return;
+        }
+
+        connectSignal.onNext(CONNECT);
     }
 
     public void writeMessage(String message) {
@@ -115,11 +131,12 @@ public final class SocketClient {
 
     @SuppressWarnings("unchecked")
     private Completable makeConnection() {
-        final Completable completable = Completable.fromAction(() -> {
+        final Completable completable = Completable.create(emitter -> {
             try (Socket socket = new Socket()) {
                 socket.connect(new InetSocketAddress(HOST, settingStorage.getPort()));
                 status.onNext(SocketConnectionStatus.CONNECTED);
                 System.out.println("Server connected");
+                emitter.setCancellable(socket::close);
 
                 try (DataInputStream inputStream = new DataInputStream(socket.getInputStream());
                      DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream())) {
@@ -134,16 +151,21 @@ public final class SocketClient {
                         final SocketHandler handler = socketAdapter.getSocketHandler(socketMessage.getType());
                         handler.execute(socketMessage.getPayload());
                     }
+                } catch (SocketException e) {
+                    // Ignored
                 }
             }
+            emitter.onComplete();
         });
 
         return completable.doOnSubscribe(disposable -> status.onNext(SocketConnectionStatus.CONNECTING))
-                .doOnTerminate(() -> {
-                    System.out.println("Connection closed");
-                    status.onNext(SocketConnectionStatus.DISCONNECTED);
-                    RxUtils.dispose(writeDisposable);
-                    RxUtils.dispose(syncFilterDisposable);
-                });
+                .doOnDispose(this::handleConnectionClose)
+                .doOnTerminate(this::handleConnectionClose)
+                .subscribeOn(Schedulers.io());
+    }
+
+    private void handleConnectionClose() {
+        System.out.println("Connection closed");
+        status.onNext(SocketConnectionStatus.DISCONNECTED);
     }
 }

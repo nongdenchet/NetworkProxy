@@ -26,9 +26,25 @@ final class NPStateReducer implements BiFunction<NPState, NPCommand, NPState> {
             return addPendingResponse(prev, ((NPCommand.AddPendingResponse) command).getPendingResponse());
         } else if (command instanceof NPCommand.ApplyInstructions) {
             return applyInstructions(prev, ((NPCommand.ApplyInstructions) command).getInstructions());
+        } else if (command instanceof NPCommand.SkipAllPendingResponse) {
+            return skipAllPendingResponse(prev);
         }
 
         return prev;
+    }
+
+    private NPState skipAllPendingResponse(NPState prev) {
+        NPLogger.log("Skip all pending response");
+
+        final List<Instruction> newInstructions = new ArrayList<>(prev.getResponses().size());
+        for (PendingResponse pendingResponse : prev.getResponses()) {
+            newInstructions.add(new Instruction(pendingResponse.getId(), new Instruction.Input()));
+        }
+        
+        return prev.newBuilder()
+                .responses(Collections.<PendingResponse>emptyList())
+                .instructions(newInstructions)
+                .build();
     }
 
     private NPState applyInstructions(NPState prev, List<Instruction> instructions) {

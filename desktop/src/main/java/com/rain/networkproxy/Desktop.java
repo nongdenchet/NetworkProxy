@@ -109,7 +109,13 @@ public class Desktop extends Application {
 
     private Node toolBar() {
         final Button btnConnect = new Button("Connect");
-        btnConnect.setOnMouseClicked(event -> socketClient.connect());
+        btnConnect.setOnMouseClicked(event -> {
+            if (socketClient.isConnected()) {
+                socketClient.disconnect();
+            } else {
+                socketClient.connect();
+            }
+        });
 
         final Button btnAddFilter = new Button("Add Filter");
         btnAddFilter.setOnMouseClicked(event -> showAddFilter());
@@ -125,9 +131,9 @@ public class Desktop extends Application {
                     if (socketConnectionStatus == SocketConnectionStatus.DISCONNECTED) {
                         cleanTextAreas();
                         responseObservableList.setAll(Collections.emptyList());
-                        btnConnect.setDisable(false);
+                        btnConnect.setText("Connect");
                     } else if (socketConnectionStatus == SocketConnectionStatus.CONNECTED) {
-                        btnConnect.setDisable(true);
+                        btnConnect.setText("Disconnect");
                     }
                 }));
 
