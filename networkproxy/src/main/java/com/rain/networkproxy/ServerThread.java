@@ -156,6 +156,12 @@ final class ServerThread extends Thread {
         }
     }
 
+    private void handleDisconnectClient() {
+        NPLogger.log("Disconnecting Desktop App");
+        dispatcher.dispatch(new NPCommand.ApplyFilter(Collections.<String>emptyList()));
+        dispatcher.dispatch(new NPCommand.SkipAllPendingResponse());
+    }
+
     @Override
     public void run() {
         try {
@@ -184,6 +190,7 @@ final class ServerThread extends Thread {
                     StreamUtils.close(outputStream);
                     StreamUtils.close(inputStream);
                     NPLogger.log("Stop client");
+                    handleDisconnectClient();
                 }
             }
         } catch (IOException e) {

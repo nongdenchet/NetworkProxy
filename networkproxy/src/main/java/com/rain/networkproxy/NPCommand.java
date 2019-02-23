@@ -20,6 +20,8 @@ public abstract class NPCommand {
         }
     }
 
+    public static class SkipAllPendingResponse extends NPCommand {}
+
     public static class ApplyInstructions extends NPCommand {
         private final List<Instruction> instructions;
 
