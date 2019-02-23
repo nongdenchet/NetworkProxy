@@ -18,8 +18,8 @@ In your `app/build.gradle`:
 
 ```groovy
 dependencies {
-  debugImplementation 'com.github.nongdenchet:networkproxy:0.5.0'
-  releaseImplementation 'com.github.nongdenchet:networkproxy-no-op:0.5.0'
+  debugImplementation 'com.github.nongdenchet:networkproxy:0.6.0'
+  releaseImplementation 'com.github.nongdenchet:networkproxy-no-op:0.6.0'
 }
 ```
 
@@ -49,7 +49,7 @@ public class ExampleApplication extends Application {
 ```
 
 - Connect your device with adb and run `adb forward tcp:8000 tcp:9000` to connect port 8000 of your computer and port 9000 of your device
-- We provide a [client desktop](https://github.com/nongdenchet/NetworkProxy/blob/master/desktop/release/NetworkProxyClient-0.5.0-all.jar) app to use and interact with pending response
+- We provide a [client desktop](https://github.com/nongdenchet/NetworkProxy/blob/master/desktop/release/NetworkProxyClient-0.6.0-all.jar) app to use and interact with pending response
 - Demo:
 ![alt text](https://github.com/nongdenchet/NetworkProxy/blob/master/socket_demo.gif " NetworkProxy")
 
