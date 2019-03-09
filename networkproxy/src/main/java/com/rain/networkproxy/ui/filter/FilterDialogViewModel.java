@@ -16,9 +16,6 @@ import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.BiFunction;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 import io.reactivex.subjects.PublishSubject;
 
 final class FilterDialogViewModel {
@@ -39,32 +36,13 @@ final class FilterDialogViewModel {
 
     void initialize() {
         disposable = actions.serialize()
-                .withLatestFrom(filterStorage.getItems(), new BiFunction<FilterAction, List<FilterItem>, List<FilterItem>>() {
-                    @Override
-                    public List<FilterItem> apply(FilterAction action, List<FilterItem> filterItems) {
-                        return reduce(filterItems, action);
-                    }
-                })
-                .map(new Function<List<FilterItem>, List<FilterItem>>() {
-                    @Override
-                    public List<FilterItem> apply(List<FilterItem> filterItems) {
-                        return Collections.unmodifiableList(filterItems);
-                    }
-                })
-                .subscribe(new Consumer<List<FilterItem>>() {
-                    @Override
-                    public void accept(List<FilterItem> filterItems) {
-                        filterStorage.storeItems(filterItems);
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) {
-                        NPLogger.logError("FilterDialogViewModel#actions", throwable);
-                    }
-                });
+                .withLatestFrom(filterStorage.getItems(), this::reduce)
+                .map(Collections::unmodifiableList)
+                .subscribe(filterStorage::storeItems, throwable ->
+                        NPLogger.logError("FilterDialogViewModel#actions", throwable));
     }
 
-    private List<FilterItem> reduce(List<FilterItem> prev, FilterAction action) {
+    private List<FilterItem> reduce(FilterAction action, List<FilterItem> prev) {
         if (action instanceof FilterAction.Remove) {
             return remove(prev, ((FilterAction.Remove) action).position);
         } else if (action instanceof FilterAction.Update) {
@@ -128,30 +106,27 @@ final class FilterDialogViewModel {
 
     Observable<List<FilterItemViewModel>> observeItems() {
         return filterStorage.getItems()
-                .map(new Function<List<FilterItem>, List<FilterItemViewModel>>() {
-                    @Override
-                    public List<FilterItemViewModel> apply(List<FilterItem> filterItems) {
-                        if (filterItems.isEmpty()) {
-                            return Collections.emptyList();
-                        }
-
-                        boolean allSelected = true;
-                        final List<FilterItemViewModel> items = new ArrayList<>(filterItems.size() + 1);
-
-                        for (FilterItem filterItem : filterItems) {
-                            allSelected = allSelected && filterItem.isActive();
-                            items.add(new FilterItemViewModel(
-                                    filterItem.getRule(),
-                                    filterItem.isActive()
-                            ));
-                        }
-                        items.add(SELECT_ALL_POSITION, new FilterItemViewModel(
-                                resourceProvider.getString(R.string.network_proxy_select_all),
-                                allSelected
-                        ));
-
-                        return items;
+                .map(filterItems -> {
+                    if (filterItems.isEmpty()) {
+                        return Collections.emptyList();
                     }
+
+                    boolean allSelected = true;
+                    final List<FilterItemViewModel> items = new ArrayList<>(filterItems.size() + 1);
+
+                    for (FilterItem filterItem : filterItems) {
+                        allSelected = allSelected && filterItem.isActive();
+                        items.add(new FilterItemViewModel(
+                                filterItem.getRule(),
+                                filterItem.isActive()
+                        ));
+                    }
+                    items.add(SELECT_ALL_POSITION, new FilterItemViewModel(
+                            resourceProvider.getString(R.string.network_proxy_select_all),
+                            allSelected
+                    ));
+
+                    return items;
                 });
     }
 }

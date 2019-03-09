@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
@@ -21,14 +20,12 @@ import com.rain.networkproxy.ui.OverlayService;
 import com.rain.networkproxy.ui.Utils;
 import com.rain.networkproxy.ui.filter.FilterDialog;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 
 import static android.view.MotionEvent.ACTION_UP;
 
@@ -73,12 +70,7 @@ public final class Dashboard extends OverlayService implements DashboardAdapter.
         removeBar = new RemoveBar(this);
         detailDialog = new DetailDialog(this);
         background = new Background(this);
-        background.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                hideContent();
-            }
-        });
+        background.setOnClickListener(v -> hideContent());
         background.attach();
     }
 
@@ -93,34 +85,21 @@ public final class Dashboard extends OverlayService implements DashboardAdapter.
     private void initContent(View view) {
         tvEmpty = view.findViewById(R.id.tvEmpty);
         content = view.findViewById(R.id.content);
-        view.findViewById(R.id.ivFilter).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                filterDialog.show();
-            }
-        });
+        view.findViewById(R.id.ivFilter).setOnClickListener(v -> filterDialog.show());
     }
 
     @SuppressLint("ClickableViewAccessibility")
     private void initShortcut(View view) {
         shortcut = view.findViewById(R.id.shortcut);
-        shortcut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showContent();
+        shortcut.setOnClickListener(v -> showContent());
+        shortcut.setOnTouchListener((v, event) -> {
+            final boolean isInRemoveBar = event.getRawY() > removeBar.getY();
+            if (event.getAction() == ACTION_UP && isInRemoveBar) {
+                stopSelf();
+                return true;
             }
-        });
-        shortcut.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent event) {
-                final boolean isInRemoveBar = event.getRawY() > removeBar.getY();
-                if (event.getAction() == ACTION_UP && isInRemoveBar) {
-                    stopSelf();
-                    return true;
-                }
 
-                return Dashboard.this.onTouch(view, event);
-            }
+            return Dashboard.this.onTouch(v, event);
         });
     }
 
@@ -154,17 +133,8 @@ public final class Dashboard extends OverlayService implements DashboardAdapter.
         hidingDisposable = Observable.just(0)
                 .delay(2, TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<Integer>() {
-                    @Override
-                    public void accept(Integer integer) {
-                        shortcut.setAlpha(0.25f);
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) {
-                        NPLogger.logError("Dashboard#blurShortcut", throwable);
-                    }
-                });
+                .subscribe(integer -> shortcut.setAlpha(0.25f), throwable ->
+                        NPLogger.logError("Dashboard#blurShortcut", throwable));
         disposables.add(hidingDisposable);
     }
 
@@ -189,18 +159,10 @@ public final class Dashboard extends OverlayService implements DashboardAdapter.
     private void bindViewModels() {
         disposables.add(viewModel.observePendingResponses()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<List<PendingResponse>>() {
-                    @Override
-                    public void accept(List<PendingResponse> pendingResponses) {
-                        adapter.submitList(pendingResponses);
-                        tvEmpty.setVisibility(pendingResponses.isEmpty() ? View.VISIBLE : View.GONE);
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) {
-                        NPLogger.logError("observePendingResponses", throwable);
-                    }
-                }));
+                .subscribe(pendingResponses -> {
+                    adapter.submitList(pendingResponses);
+                    tvEmpty.setVisibility(pendingResponses.isEmpty() ? View.VISIBLE : View.GONE);
+                }, throwable -> NPLogger.logError("observePendingResponses", throwable)));
     }
 
     @Override

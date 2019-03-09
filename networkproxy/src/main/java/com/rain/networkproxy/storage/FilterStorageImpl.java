@@ -14,7 +14,6 @@ import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.functions.Function;
-import io.reactivex.functions.Predicate;
 
 public final class FilterStorageImpl implements FilterStorage {
     private static final String KEY = "filter_items";
@@ -33,34 +32,16 @@ public final class FilterStorageImpl implements FilterStorage {
     @Override
     public Observable<List<FilterItem>> getItems() {
         return keyChanges.startWith(KEY)
-                .filter(new Predicate<String>() {
-                    @Override
-                    public boolean test(String key) {
-                        return KEY.equals(key);
+                .filter(KEY::equals)
+                .map(key -> sharedPreferences.getString(key, ""))
+                .map((Function<String, List<FilterItem>>) value -> {
+                    if (value == null || value.isEmpty()) {
+                        return new ArrayList<>();
                     }
-                })
-                .map(new Function<String, String>() {
-                    @Override
-                    public String apply(String key) {
-                        return sharedPreferences.getString(key, "");
-                    }
-                })
-                .map(new Function<String, List<FilterItem>>() {
-                    @Override
-                    public List<FilterItem> apply(String value) {
-                        if (value == null || value.isEmpty()) {
-                            return new ArrayList<>();
-                        }
 
-                        return gson.fromJson(value, TYPE);
-                    }
+                    return gson.fromJson(value, TYPE);
                 })
-                .map(new Function<List<FilterItem>, List<FilterItem>>() {
-                    @Override
-                    public List<FilterItem> apply(List<FilterItem> filterItems) {
-                        return Collections.unmodifiableList(filterItems);
-                    }
-                })
+                .map(Collections::unmodifiableList)
                 .distinctUntilChanged();
     }
 

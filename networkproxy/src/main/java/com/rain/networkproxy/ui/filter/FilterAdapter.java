@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 
@@ -95,27 +94,21 @@ final class FilterAdapter extends ArrayAdapter<FilterItemViewModel> {
 
         ViewHolder(@NonNull View itemView) {
             ivClose = itemView.findViewById(R.id.ivClose);
-            ivClose.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    final int position = getAdapterPosition(v);
+            ivClose.setOnClickListener(v -> {
+                final int position = getAdapterPosition(v);
 
-                    if (position != AdapterView.INVALID_POSITION) {
-                        listener.post(new FilterAction.Remove(getAdapterPosition(v)));
-                    }
+                if (position != AdapterView.INVALID_POSITION) {
+                    listener.post(new FilterAction.Remove(getAdapterPosition(v)));
                 }
             });
             cbActive = itemView.findViewById(R.id.cbActive);
-            cbActive.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    final int position = getAdapterPosition(buttonView);
+            cbActive.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                final int position = getAdapterPosition(buttonView);
 
-                    if (position != AdapterView.INVALID_POSITION) {
-                        final FilterItemViewModel item = getItem(position);
-                        if (item != null && isChecked != item.isActive()) {
-                            listener.post(new FilterAction.Update(position, isChecked));
-                        }
+                if (position != AdapterView.INVALID_POSITION) {
+                    final FilterItemViewModel item = getItem(position);
+                    if (item != null && isChecked != item.isActive()) {
+                        listener.post(new FilterAction.Update(position, isChecked));
                     }
                 }
             });

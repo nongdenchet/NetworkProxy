@@ -18,8 +18,26 @@ In your `app/build.gradle`:
 
 ```groovy
 dependencies {
-  debugImplementation 'com.github.nongdenchet:networkproxy:0.6.0'
-  releaseImplementation 'com.github.nongdenchet:networkproxy-no-op:0.6.0'
+  debugImplementation 'com.github.nongdenchet:networkproxy:0.7.0'
+  releaseImplementation 'com.github.nongdenchet:networkproxy-no-op:0.7.0'
+}
+```
+
+Since OkHttp now requires Android 5.0+ (API level 21+) and Java 8+, we need to add:
+
+```groovy
+android {
+  // other configuration...
+  defaultConfig {
+    // other configuration...
+    minSdkVersion 21
+  }
+  
+  // other configuration...
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
 }
 ```
 

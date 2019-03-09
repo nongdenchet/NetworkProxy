@@ -45,12 +45,7 @@ final class Background {
     }
 
     void setOnClickListener(final View.OnClickListener onClickListener) {
-        getContentView().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onClickListener.onClick(v);
-            }
-        });
+        getContentView().setOnClickListener(onClickListener);
     }
 
     void deactivateBackground() {
@@ -71,7 +66,7 @@ final class Background {
 
     void attach() {
         final FrameLayout contentView = getContentView();
-        if (!Utils.isAttachedToWindow(contentView)) {
+        if (!contentView.isAttachedToWindow()) {
             windowManager.addView(contentView, getLayoutParams());
         }
     }

@@ -27,8 +27,6 @@ import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
@@ -63,52 +61,18 @@ final class ServerThread extends Thread {
         disposable = stateProvider.state()
                 .serialize()
                 .observeOn(Schedulers.io())
-                .map(new Function<NPState, List<PendingResponse>>() {
-                    @Override
-                    public List<PendingResponse> apply(NPState npState) {
-                        return npState.getResponses();
-                    }
-                })
+                .map(NPState::getResponses)
                 .distinctUntilChanged()
-                .map(new Function<List<PendingResponse>, List<InternalResponse>>() {
-                    @Override
-                    public List<InternalResponse> apply(List<PendingResponse> pendingResponses) {
-                        return toInternalResponse(pendingResponses);
-                    }
-                })
-                .map(new Function<List<InternalResponse>, SocketMessage<List<InternalResponse>>>() {
-                    @Override
-                    public SocketMessage<List<InternalResponse>> apply(List<InternalResponse> internalResponses) {
-                        return new SocketMessage<>(SocketMessage.INTERNAL_RESPONSES, internalResponses);
-                    }
-                })
-                .map(new Function<SocketMessage<List<InternalResponse>>, String>() {
-                    @Override
-                    public String apply(SocketMessage<List<InternalResponse>> message) {
-                        return gson.toJson(message, SocketMessage.class);
-                    }
-                })
-                .subscribe(new Consumer<String>() {
-                    @Override
-                    public void accept(String data) throws Exception {
-                        sendMessage(dataOutputStream, data);
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) {
-                        NPLogger.logError("NPProcess#listenToPendingResponses", throwable);
-                    }
-                });
+                .map(this::toInternalResponse)
+                .map(internalResponses -> new SocketMessage<>(SocketMessage.INTERNAL_RESPONSES, internalResponses))
+                .map(message -> gson.toJson(message, SocketMessage.class))
+                .subscribe(data -> sendMessage(dataOutputStream, data), throwable ->
+                        NPLogger.logError("NPProcess#listenToPendingResponses", throwable));
     }
 
     private List<InternalResponse> toInternalResponse(List<PendingResponse> pendingResponses) {
         return Observable.fromIterable(pendingResponses)
-                .map(new Function<PendingResponse, InternalResponse>() {
-                    @Override
-                    public InternalResponse apply(PendingResponse pendingResponse) throws Exception {
-                        return toInternalResponse(pendingResponse);
-                    }
-                })
+                .map(this::toInternalResponse)
                 .toList()
                 .blockingGet();
     }
@@ -158,7 +122,7 @@ final class ServerThread extends Thread {
 
     private void handleDisconnectClient() {
         NPLogger.log("Disconnecting Desktop App");
-        dispatcher.dispatch(new NPCommand.ApplyFilter(Collections.<String>emptyList()));
+        dispatcher.dispatch(new NPCommand.ApplyFilter(Collections.emptyList()));
         dispatcher.dispatch(new NPCommand.SkipAllPendingResponse());
     }
 
