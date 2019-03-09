@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 import java.io.Closeable;
 import java.io.IOException;
 
-public class StreamUtils {
+public final class StreamUtils {
     private StreamUtils() {}
 
     public static void close(@Nullable Closeable closeable) {

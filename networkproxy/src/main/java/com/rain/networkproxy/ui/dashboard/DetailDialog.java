@@ -3,7 +3,6 @@ package com.rain.networkproxy.ui.dashboard;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -19,12 +18,9 @@ import com.rain.networkproxy.ui.Utils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.concurrent.Callable;
-
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
@@ -54,26 +50,23 @@ final class DetailDialog {
     }
 
     private Single<String> responseToString(final PendingResponse pendingResponse) {
-        return Single.fromCallable(new Callable<String>() {
-            @Override
-            public String call() throws Exception {
-                final Response response = pendingResponse.getResponse();
-                final ResponseBody responseBody = response.body();
-                if (responseBody == null) {
-                    return "";
-                }
+        return Single.fromCallable(() -> {
+            final Response response = pendingResponse.getResponse();
+            final ResponseBody responseBody = response.body();
+            if (responseBody == null) {
+                return "";
+            }
 
-                final String json = Utils.readFromBuffer(response.headers(), responseBody);
-                try {
-                    if (json.startsWith("[")) {
-                        return new JSONArray(json).toString(2);
-                    } else {
-                        return new JSONObject(json).toString(2);
-                    }
-                } catch (Exception e) {
-                    NPLogger.logError("DetailDialog#responseToString", e);
-                    return json;
+            final String json = Utils.readFromBuffer(response.headers(), responseBody);
+            try {
+                if (json.startsWith("[")) {
+                    return new JSONArray(json).toString(2);
+                } else {
+                    return new JSONObject(json).toString(2);
                 }
+            } catch (Exception e) {
+                NPLogger.logError("DetailDialog#responseToString", e);
+                return json;
             }
         });
     }
@@ -82,17 +75,8 @@ final class DetailDialog {
         disposable = responseToString(pendingResponse)
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<String>() {
-                    @Override
-                    public void accept(String jsonString) {
-                        showContent(jsonString, view);
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) {
-                        NPLogger.logError("DashboardDetailDialog#showDetail", throwable);
-                    }
-                });
+                .subscribe(jsonString -> showContent(jsonString, view), throwable ->
+                        NPLogger.logError("DashboardDetailDialog#showDetail", throwable));
     }
 
     private void showContent(final String jsonString, final View view) {
@@ -114,20 +98,10 @@ final class DetailDialog {
         final View view = LayoutInflater.from(context).inflate(R.layout.network_proxy_detail, null);
         alertDialog = new AlertDialog.Builder(context)
                 .setView(view)
-                .setOnCancelListener(new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialog) {
-                        dispose();
-                    }
-                })
+                .setOnCancelListener(dialog -> dispose())
                 .create();
         alertDialog.getWindow().setType(Utils.getOverlayType());
-        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialog) {
-                showContent(pendingResponse, view);
-            }
-        });
+        alertDialog.setOnShowListener(dialog -> showContent(pendingResponse, view));
         alertDialog.show();
     }
 }

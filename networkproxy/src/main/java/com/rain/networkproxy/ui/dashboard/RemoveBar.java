@@ -47,7 +47,7 @@ final class RemoveBar {
 
     void attach() {
         final FrameLayout contentView = getContentView();
-        if (!Utils.isAttachedToWindow(contentView)) {
+        if (!contentView.isAttachedToWindow()) {
             windowManager.addView(contentView, getLayoutParams(contentView));
         }
     }

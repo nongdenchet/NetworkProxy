@@ -114,24 +114,18 @@ final class DashboardAdapter extends ArrayAdapter<PendingResponse> {
 
         ViewHolder(@NonNull final View itemView) {
             tvTitle = itemView.findViewById(R.id.tvTitle);
-            itemView.findViewById(R.id.tvProceed).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    final int position = getAdapterPosition(v);
+            itemView.findViewById(R.id.tvProceed).setOnClickListener(v -> {
+                final int position = getAdapterPosition(v);
 
-                    if (position != AdapterView.INVALID_POSITION) {
-                        listener.onProceed(getItem(getAdapterPosition(v)));
-                    }
+                if (position != AdapterView.INVALID_POSITION) {
+                    listener.onProceed(getItem(getAdapterPosition(v)));
                 }
             });
-            itemView.findViewById(R.id.tvDetail).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    final int position = getAdapterPosition(v);
+            itemView.findViewById(R.id.tvDetail).setOnClickListener(v -> {
+                final int position = getAdapterPosition(v);
 
-                    if (position != AdapterView.INVALID_POSITION) {
-                        listener.onShow(getItem(getAdapterPosition(v)));
-                    }
+                if (position != AdapterView.INVALID_POSITION) {
+                    listener.onShow(getItem(getAdapterPosition(v)));
                 }
             });
         }

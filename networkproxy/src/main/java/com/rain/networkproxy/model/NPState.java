@@ -11,9 +11,9 @@ public final class NPState {
     private final List<Instruction> instructions;
 
     public static final NPState DEFAULT = new NPState(
-            new RequestFilter(Collections.<String>emptyList()),
-            Collections.<PendingResponse>emptyList(),
-            Collections.<Instruction>emptyList()
+            new RequestFilter(Collections.emptyList()),
+            Collections.emptyList(),
+            Collections.emptyList()
     );
 
     private NPState(@NonNull RequestFilter requestFilter,

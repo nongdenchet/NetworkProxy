@@ -40,7 +40,7 @@ public final class NotificationHandler {
                     .setAutoCancel(false)
                     .setContentIntent(PendingIntent.getActivity(context, 0, intent, 0))
                     .build();
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+        } else {
             return new Notification.Builder(context)
                     .setSmallIcon(R.drawable.network_proxy_ic_shortcut)
                     .setContentTitle(context.getString(R.string.network_proxy_notification_title))
@@ -49,14 +49,6 @@ public final class NotificationHandler {
                     .setAutoCancel(false)
                     .setContentIntent(PendingIntent.getActivity(context, 0, intent, 0))
                     .build();
-        } else {
-            return new Notification.Builder(context)
-                    .setSmallIcon(R.drawable.network_proxy_ic_shortcut)
-                    .setContentTitle(context.getString(R.string.network_proxy_notification_title))
-                    .setContentText(context.getString(R.string.network_proxy_notification_description))
-                    .setAutoCancel(false)
-                    .setContentIntent(PendingIntent.getActivity(context, 0, intent, 0))
-                    .getNotification();
         }
     }
 

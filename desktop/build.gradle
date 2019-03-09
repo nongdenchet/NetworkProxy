@@ -2,10 +2,10 @@ apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'java'
 
 def name = 'NetworkProxyClient'
-def version = "0.6.0"
+def version = "0.7.0"
 
-sourceCompatibility = "8"
-targetCompatibility = "8"
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 
 shadowJar {
     baseName = "$name-$version"

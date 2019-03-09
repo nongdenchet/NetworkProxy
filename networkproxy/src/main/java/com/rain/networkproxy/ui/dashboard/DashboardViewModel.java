@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.List;
 
 import io.reactivex.Observable;
-import io.reactivex.functions.Function;
 
 final class DashboardViewModel {
     private final Dispatcher<NPCommand> dispatcher;
@@ -32,12 +31,7 @@ final class DashboardViewModel {
 
     Observable<List<PendingResponse>> observePendingResponses() {
         return stateProvider.state()
-                .map(new Function<NPState, List<PendingResponse>>() {
-                    @Override
-                    public List<PendingResponse> apply(NPState state) {
-                        return state.getResponses();
-                    }
-                })
+                .map(NPState::getResponses)
                 .distinctUntilChanged();
     }
 }

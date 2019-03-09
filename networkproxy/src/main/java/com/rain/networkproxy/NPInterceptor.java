@@ -3,15 +3,12 @@ package com.rain.networkproxy;
 import android.support.annotation.NonNull;
 
 import com.rain.networkproxy.model.Instruction;
-import com.rain.networkproxy.model.NPState;
 import com.rain.networkproxy.model.PendingResponse;
 import com.rain.networkproxy.model.RequestFilter;
 
 import java.io.IOException;
 import java.util.List;
 
-import io.reactivex.functions.Function;
-import io.reactivex.functions.Predicate;
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -49,18 +46,8 @@ final class NPInterceptor implements Interceptor {
         process.dispatch(new NPCommand.AddPendingResponse(pendingResponse));
 
         final Instruction instruction = process.state()
-                .map(new Function<NPState, Instruction>() {
-                    @Override
-                    public Instruction apply(NPState state) {
-                        return findInstruction(id, state.getInstructions());
-                    }
-                })
-                .filter(new Predicate<Instruction>() {
-                    @Override
-                    public boolean test(Instruction instruction) {
-                        return !instruction.isEmpty();
-                    }
-                })
+                .map(state -> findInstruction(id, state.getInstructions()))
+                .filter(i -> !i.isEmpty())
                 .blockingFirst();
 
         return apply(response, instruction);

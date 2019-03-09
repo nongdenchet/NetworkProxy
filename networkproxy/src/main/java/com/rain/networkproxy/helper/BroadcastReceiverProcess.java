@@ -2,16 +2,17 @@ package com.rain.networkproxy.helper;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import com.rain.networkproxy.NPCommand;
 import com.rain.networkproxy.internal.Dispatcher;
 import com.rain.networkproxy.model.Instruction;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 
 import java.util.Collections;
 import java.util.List;
+
+import io.reactivex.disposables.Disposable;
 
 public final class BroadcastReceiverProcess {
     private final EventBus eventBus;
@@ -61,17 +62,8 @@ public final class BroadcastReceiverProcess {
         dispose();
         disposable = eventBus.observeEvents()
                 .ofType(BroadcastEvent.class)
-                .subscribe(new Consumer<BroadcastEvent>() {
-                    @Override
-                    public void accept(BroadcastEvent event) {
-                        handleEvent(event);
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) {
-                        NPLogger.logError("BroadcastReceiver#observeEvents", throwable);
-                    }
-                });
+                .subscribe(this::handleEvent, throwable ->
+                        NPLogger.logError("BroadcastReceiver#observeEvents", throwable));
     }
 
     private void handleEvent(BroadcastEvent event) {

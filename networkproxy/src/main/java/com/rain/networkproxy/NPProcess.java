@@ -1,18 +1,19 @@
 package com.rain.networkproxy;
 
 import android.support.annotation.Nullable;
+
 import com.rain.networkproxy.helper.NPLogger;
 import com.rain.networkproxy.helper.RxUtils;
 import com.rain.networkproxy.internal.Dispatcher;
 import com.rain.networkproxy.internal.StateProvider;
 import com.rain.networkproxy.model.NPState;
-import io.reactivex.Observable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.subjects.BehaviorSubject;
-import io.reactivex.subjects.PublishSubject;
 
 import java.util.concurrent.atomic.AtomicInteger;
+
+import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.subjects.BehaviorSubject;
+import io.reactivex.subjects.PublishSubject;
 
 import static com.rain.networkproxy.ServerThread.NO_PORT;
 
@@ -42,17 +43,8 @@ final class NPProcess implements StateProvider<NPState>, Dispatcher<NPCommand> {
     private Disposable bindCommands() {
         return commands.serialize()
                 .scan(NPState.DEFAULT, new NPStateReducer())
-                .subscribe(new Consumer<NPState>() {
-                    @Override
-                    public void accept(NPState npState) {
-                        state.onNext(npState);
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) {
-                        NPLogger.logError("NPProcess#bindCommands", throwable);
-                    }
-                });
+                .subscribe(state::onNext, throwable ->
+                        NPLogger.logError("NPProcess#bindCommands", throwable));
     }
 
     int getNextId() {

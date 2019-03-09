@@ -14,7 +14,6 @@ import java.util.Set;
 
 import io.reactivex.Observable;
 import io.reactivex.functions.BiFunction;
-import io.reactivex.functions.Function;
 
 final class NPStateReducer implements BiFunction<NPState, NPCommand, NPState> {
 
@@ -42,7 +41,7 @@ final class NPStateReducer implements BiFunction<NPState, NPCommand, NPState> {
         }
         
         return prev.newBuilder()
-                .responses(Collections.<PendingResponse>emptyList())
+                .responses(Collections.emptyList())
                 .instructions(newInstructions)
                 .build();
     }
@@ -81,12 +80,7 @@ final class NPStateReducer implements BiFunction<NPState, NPCommand, NPState> {
 
     private Set<String> toInstructionIds(List<Instruction> instructions) {
         final List<String> ids = Observable.fromIterable(instructions)
-                .map(new Function<Instruction, String>() {
-                    @Override
-                    public String apply(Instruction instruction) {
-                        return instruction.getId();
-                    }
-                })
+                .map(Instruction::getId)
                 .toList()
                 .blockingGet();
 
@@ -95,12 +89,7 @@ final class NPStateReducer implements BiFunction<NPState, NPCommand, NPState> {
 
     private Set<String> toResponseIds(List<PendingResponse> responses) {
         final List<String> ids = Observable.fromIterable(responses)
-                .map(new Function<PendingResponse, String>() {
-                    @Override
-                    public String apply(PendingResponse response) {
-                        return response.getId();
-                    }
-                })
+                .map(PendingResponse::getId)
                 .toList()
                 .blockingGet();
 
